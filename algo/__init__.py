@@ -43,9 +43,84 @@ def permutations (orig_list):
                 yield new_list[:1] + resto
 
 def excedances(p):
-    """Calculate the excedances of a permuation p"""
-    e = [i for i in range(len(p)) if p[i] > i]
-    return len(e)
+    """
+    Given a permutation p of [n] and excedance is a number i so
+    that p[i] > i.  This function calculates the list of excedances of p
+
+    Parameters
+    ----------
+
+    p : interable as a permutation in one-line notation
+
+    Returns
+    -------
+
+    e : list of indices where an excedance occurs
+    """
+    return [i for i in range(len(p)) if int(p[i]) > int(i)]
+
+
+def exc(p):
+    """
+    Given a permutation p of [n] a descent is a number i so
+    that p[i] > p[i+1].  This function calculates the number of excedances of p
+
+    Parameters
+    ----------
+
+    p : interable as a permutation in one-line notation
+
+    Returns
+    -------
+
+    e : int the number of excedances of p
+    """
+    return len(excedances(p))
+
+def descents(p):
+    """
+    Given a permutation p of [n] a descent is a number i so
+    that p[i] > p[i+1].  This function calculates the list of descents of p
+
+    Parameters
+    ----------
+
+    p : interable as a permutation in one-line notation
+
+    Returns
+    -------
+
+    e : list of indices where a descent occurs
+    """
+    return [i for i in range(len(p)-1) if p[i] > p[i+1]]
+
+def desc(p):
+    """
+    Given a permutation p of [n] a descent is a number i so
+    that p[i] > p[i+1].  This function calculates the number of descents of p
+
+    Parameters
+    ----------
+
+    p : interable as a permutation in one-line notation
+
+    Returns
+    -------
+
+    e : int of the number of descents of p
+    """
+    return len(descents(p))
+
+def inversions(p):
+
+    return ([(i,j) for i in range(len(p)-1)
+                for j in range(i, len(p)) if p[i] > p[j]])
+
+def inv(p):
+    return len(inversions(p))
+
+def length(p):
+    return len(inversions(p))
 
 def max_move(p):
     """
@@ -212,12 +287,12 @@ def transpose(P):
     Returns the transpose of a tableau
     """
     PP = []
-    n = max(max(P))
     for i in range(len(P)):
         for j in range(len(P[i])):
                 PP.append([j, P[i][j]])
 
-    ind = [[i[1] for i in PP if i[0] == j] for j in range(n)]
+    n = max(max(P))
+    ind = [[k[1] for k in PP if k[0] == j] for j in range(n)]
 
     p = []
     for i in range(len(ind)):
