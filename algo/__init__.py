@@ -287,12 +287,12 @@ def transpose(P):
     Returns the transpose of a tableau
     """
     PP = []
-    n = max(max(P))
     for i in range(len(P)):
         for j in range(len(P[i])):
                 PP.append([j, P[i][j]])
 
-    ind = [[i[1] for i in PP if i[0] == j] for j in range(n)]
+    n = max(max(P))
+    ind = [[k[1] for k in PP if k[0] == j] for j in range(n)]
 
     p = []
     for i in range(len(ind)):
