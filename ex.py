@@ -17,7 +17,7 @@ for p in permutations(range(4)):
     else: c.append(code(p))
 
 
-for p in permutations(range(4)):
+for p in permutations(range(5)):
     c = code(p); s = sum(c[1].values())
     print(c[0], s, RSK(c[0]))
 

@@ -246,8 +246,12 @@ def all_perms(n):
 def intersection(lst1, lst2):
     return list(set(lst1) & set(lst2))
 
+def shape(P):
+    return tuple(len(P[r]) for r in range(len(P)))
 
-def PRSK(p, k):
+
+
+def PRSK(p, k=2):
     '''Given a permutation p, spit out a pair P a P_n,k tableaux and Q a standard Young tableaux
     -- See Sundquist, Wagner, West'''
     P = []
@@ -280,7 +284,54 @@ def PRSK(p, k):
     for i in range(len(p)):
         insert(int(p[i]), i+1, k)
 
-    #P = transpose(P)
-    #Q = transpose(Q)
+    P = transpose(P)
+    Q = transpose(Q)
 
     return (P, Q)
+
+def transpose(P):
+    """
+    Returns the transpose of a tableau
+    """
+    PP = []
+    for i in range(len(P)):
+        for j in range(len(P[i])):
+                PP.append([j, P[i][j]])
+
+    n = max(max(P))
+    ind = [[k[1] for k in PP if k[0] == j] for j in range(n)]
+
+    p = []
+    for i in range(len(ind)):
+        if len(ind[i]) != 0:
+            p.append(ind[i])
+    return p
+
+def P_inv(P, k=1):
+    #P = transpose(P)
+    inv = 0
+    n = max(max(P))
+    columns = {i: P[r].index(i) for r in range(len(P)) for i in range(1, n+1) if i in P[r]}
+    for i in range(1, n+1):
+        for j in range(i, i+k):
+            if j > n:
+                continue
+            elif columns[i] > columns[j]:
+                inv += 1
+    return inv
+for p in permutations(range(1, 4+1)):
+    P, Q = PRSK(p, 2)
+    print(P, P_inv(P,2), shape(P))
+
+def coef(n, k):
+    coefs = {i: {} for i in range(sum(range(n+1))+1)}
+    for p in permutations(range(1, n+1)):
+        P, Q = PRSK(p, k)
+        if [item for sublist in Q for item in sublist] == list(range(1, n+1)):
+            if shape(P) in list(coefs[P_inv(P, k)].keys()):
+                coefs[P_inv(P, k)][shape(P)] += 1
+            else:
+                coefs[P_inv(P, k)][shape(P)] = 1
+    return coefs
+
+coef(5, 2)
