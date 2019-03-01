@@ -243,25 +243,31 @@ def all_perms(n):
         print(p, RSK(a), f)
 
 
-def PRSK(p):
-    '''Given a permutation p, spit out a pair P a P_n,2 tableaux and Q a standard Young tableaux
+def intersection(lst1, lst2):
+    return list(set(lst1) & set(lst2))
+
+def shape(P):
+    return tuple(len(P[r]) for r in range(len(P)))
+
+
+
+def PRSK(p, k=2):
+    '''Given a permutation p, spit out a pair P a P_n,k tableaux and Q a standard Young tableaux
     -- See Sundquist, Wagner, West'''
     P = []
     Q = []
 
-    def insert(m, n=0):
+    def insert(m, n=0, k=0):
             '''Insert m into P, then place n in Q at the same place'''
+            chk = [m+diff for diff in range(-k+1, k)]
             for r in range(len(P)):
-                if m-1 in P[r]:
-                    if m+1 in P[r]:
+                if len(intersection(chk, P[r])) == 2:
                         continue
-                    else:
-                        c = P[r].index(m-1)
-                        P[r][c], m = m, P[r][c]
-                        continue
-                elif m+1 in P[r]:
-                    c = P[r].index(m+1)
+                elif len(intersection(chk, P[r])) == 1:
+                    o = intersection(chk, P[r])[0]
+                    c = P[r].index(o)
                     P[r][c], m = m, P[r][c]
+                    chk = [m+diff for diff in range(-k+1, k)]
                     continue
                 elif m > P[r][-1]:
                     P[r].append(m)
@@ -270,12 +276,13 @@ def PRSK(p):
                 else:
                     c = bisect(P[r], m)
                     P[r][c], m = m, P[r][c]
+                    chk = [m+diff for diff in range(-k+1, k)]
 
             P.append([m])
             Q.append([n])
 
     for i in range(len(p)):
-        insert(int(p[i]), i+1)
+        insert(int(p[i]), i+1, k)
 
     P = transpose(P)
     Q = transpose(Q)
@@ -299,3 +306,32 @@ def transpose(P):
         if len(ind[i]) != 0:
             p.append(ind[i])
     return p
+
+def P_inv(P, k=1):
+    #P = transpose(P)
+    inv = 0
+    n = max(max(P))
+    columns = {i: P[r].index(i) for r in range(len(P)) for i in range(1, n+1) if i in P[r]}
+    for i in range(1, n+1):
+        for j in range(i, i+k):
+            if j > n:
+                continue
+            elif columns[i] > columns[j]:
+                inv += 1
+    return inv
+for p in permutations(range(1, 4+1)):
+    P, Q = PRSK(p, 2)
+    print(P, P_inv(P,2), shape(P))
+
+def coef(n, k):
+    coefs = {i: {} for i in range(sum(range(n+1))+1)}
+    for p in permutations(range(1, n+1)):
+        P, Q = PRSK(p, k)
+        if [item for sublist in Q for item in sublist] == list(range(1, n+1)):
+            if shape(P) in list(coefs[P_inv(P, k)].keys()):
+                coefs[P_inv(P, k)][shape(P)] += 1
+            else:
+                coefs[P_inv(P, k)][shape(P)] = 1
+    return coefs
+
+coef(5, 2)
