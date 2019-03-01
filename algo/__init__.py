@@ -243,25 +243,27 @@ def all_perms(n):
         print(p, RSK(a), f)
 
 
-def PRSK(p):
-    '''Given a permutation p, spit out a pair P a P_n,2 tableaux and Q a standard Young tableaux
+def intersection(lst1, lst2):
+    return list(set(lst1) & set(lst2))
+
+
+def PRSK(p, k):
+    '''Given a permutation p, spit out a pair P a P_n,k tableaux and Q a standard Young tableaux
     -- See Sundquist, Wagner, West'''
     P = []
     Q = []
 
-    def insert(m, n=0):
+    def insert(m, n=0, k=0):
             '''Insert m into P, then place n in Q at the same place'''
+            chk = [m+diff for diff in range(-k+1, k)]
             for r in range(len(P)):
-                if m-1 in P[r]:
-                    if m+1 in P[r]:
+                if len(intersection(chk, P[r])) == 2:
                         continue
-                    else:
-                        c = P[r].index(m-1)
-                        P[r][c], m = m, P[r][c]
-                        continue
-                elif m+1 in P[r]:
-                    c = P[r].index(m+1)
+                elif len(intersection(chk, P[r])) == 1:
+                    o = intersection(chk, P[r])[0]
+                    c = P[r].index(o)
                     P[r][c], m = m, P[r][c]
+                    chk = [m+diff for diff in range(-k+1, k)]
                     continue
                 elif m > P[r][-1]:
                     P[r].append(m)
@@ -270,32 +272,15 @@ def PRSK(p):
                 else:
                     c = bisect(P[r], m)
                     P[r][c], m = m, P[r][c]
+                    chk = [m+diff for diff in range(-k+1, k)]
 
             P.append([m])
             Q.append([n])
 
     for i in range(len(p)):
-        insert(int(p[i]), i+1)
+        insert(int(p[i]), i+1, k)
 
-    P = transpose(P)
-    Q = transpose(Q)
+    #P = transpose(P)
+    #Q = transpose(Q)
 
     return (P, Q)
-
-def transpose(P):
-    """
-    Returns the transpose of a tableau
-    """
-    PP = []
-    for i in range(len(P)):
-        for j in range(len(P[i])):
-                PP.append([j, P[i][j]])
-
-    n = max(max(P))
-    ind = [[k[1] for k in PP if k[0] == j] for j in range(n)]
-
-    p = []
-    for i in range(len(ind)):
-        if len(ind[i]) != 0:
-            p.append(ind[i])
-    return p
