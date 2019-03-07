@@ -1,8 +1,9 @@
+#%%
 from bisect import bisect
 import numpy as np
 from sympy.combinatorics import Permutation
 
-from .perms import permutations
+from algo import permutations
 
 def RSK(p):
     '''Given a permutation p, spit out a pair of Young tableaux'''
@@ -28,17 +29,25 @@ def intersection(lst1, lst2):
 def shape(P):
     return tuple(len(P[r]) for r in range(len(P)))
 
+def incomparable(i, h):
+    top = h[i-1]
+    bottom = min([j+1 for j in range(len(h)) if h[j] >= i])
+    return list(range(bottom, top+1))
 
+def h_function(i, n):
+    return [min(j+i, n) for j in range(n)]
 
-def PRSK(p, k=2):
+def PRSK(p, h=1):
     '''Given a permutation p, spit out a pair P a P_n,k tableaux and Q a standard Young tableaux
     -- See Sundquist, Wagner, West'''
     P = []
     Q = []
-
-    def insert(m, n=0, k=0):
+    if type(h) == int:
+        h = h_function(h, len(p))
+    p = p[::-1]
+    def insert(m, n, h):
             '''Insert m into P, then place n in Q at the same place'''
-            chk = [m+diff for diff in range(-k+1, k)]
+            chk = incomparable(m, h)
             for r in range(len(P)):
                 if len(intersection(chk, P[r])) == 2:
                         continue
@@ -46,7 +55,7 @@ def PRSK(p, k=2):
                     o = intersection(chk, P[r])[0]
                     c = P[r].index(o)
                     P[r][c], m = m, P[r][c]
-                    chk = [m+diff for diff in range(-k+1, k)]
+                    chk = incomparable(m, h)
                     continue
                 elif m > P[r][-1]:
                     P[r].append(m)
@@ -55,13 +64,13 @@ def PRSK(p, k=2):
                 else:
                     c = bisect(P[r], m)
                     P[r][c], m = m, P[r][c]
-                    chk = [m+diff for diff in range(-k+1, k)]
+                    chk = incomparable(m, h)
 
             P.append([m])
             Q.append([n])
 
     for i in range(len(p)):
-        insert(int(p[i]), i+1, k)
+        insert(int(p[i]), i+1, h)
 
     P = transpose(P)
     Q = transpose(Q)
@@ -86,12 +95,12 @@ def transpose(P):
             p.append(ind[i])
     return p
 
-def P_inv(P, k=1):
+def P_inv(P, h):
     inv = 0
     n = max(reading_word(P))
     columns = {i: P[r].index(i) for r in range(len(P)) for i in range(1, n+1) if i in P[r]}
     for i in range(1, n+1):
-        m = min(n, i+k-1)
+        m = min(n, max(incomparable(i, h)))
         for j in range(i+1, m+1):
             if j > n:
                 continue
@@ -99,15 +108,17 @@ def P_inv(P, k=1):
                 inv += 1
     return inv
 
-def coef(n, k):
+def coef(n, h):
+    if type(h) == int:
+        h = h_function(h, n)
     coefs = {i: {} for i in range(sum(range(n+1))+1)}
     for p in permutations(range(1, n+1)):
-        P, Q = PRSK(p, k)
+        P, Q = PRSK(p, h)
         if reading_word(Q) == list(range(1, n+1)):
-            if shape(P) in list(coefs[P_inv(P, k)].keys()):
-                coefs[P_inv(P, k)][shape(P)] += 1
+            if shape(P) in list(coefs[P_inv(P, h)].keys()):
+                coefs[P_inv(P, h)][shape(P)] += 1
             else:
-                coefs[P_inv(P, k)][shape(P)] = 1
+                coefs[P_inv(P, h)][shape(P)] = 1
 
     coefs = {i:coefs[i] for i in coefs.keys() if coefs[i] != {}}
     return coefs

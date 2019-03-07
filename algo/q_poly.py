@@ -2,8 +2,6 @@
 #%%
 from sympy import symbols, expand, cancel
 
-
-
 def q_poly(q, n):
     if type(q) == str:
         q = symbols(q)
@@ -22,6 +20,3 @@ def q_fact(q, n):
 def q_binom(q, n, k):
     return expand(cancel(q_fact(q, n)/(q_fact(q, n-k)*q_fact(q, k))))
 
-
-#%%
-q_poly('x', 3)

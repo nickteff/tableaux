@@ -35,27 +35,43 @@ q = symbols('q')
 expand(q**3*q_poly(q, 2)+ 3*q**2*q_poly(q, 4) + 3*q*q_poly(q, 6) + q_poly(q, 8))
 
 #%%
-n = 5
-k = 2
-l = []
-for p in permutations(range(1,n+1)):
-    P, Q = PRSK(p, k)
-    l.append((p, shape(P), P_inv(P, k), P, Q, reading_word(Q)))
+
+def ex_df(n, h):
+    if type(h) == int:
+        h=h_function(h, n)
+    l = []
+    for p in permutations(range(1,n+1)):
+        P, Q = PRSK(p, h)
+        l.append(( shape(P), P_inv(P, h), P, Q, reading_word(Q),h))
+    return pd.DataFrame(
+        l,
+        columns=[
+            'shapes',
+            'inv',
+            'P',
+            'Q',
+            'Q_word',
+            'h'
+        ]).sort_values(by=['inv']).sort_values(by='P').sort_values(by='Q')
 
 
-coef(n, k)
 # %%
+df = ex_df(5, 2)
 
-df = pd.DataFrame(l, columns=['perm', 'shapes', 'inv', 'P', 'Q', 'Q_word'])
-
-df[
-    (df.shapes == (3,2))
-    ].sort_values(by=['inv']).sort_values(by='P').sort_values(by='Q')
-
-#df
-#%%
-P,Q = PRSK([3,5,2,1,4], 3)
-print(P, P_inv(P,3))
 
 #%%
+def h2(n):
+    h = [i for i in range(n)]
+    h[0] = 3
+    for i in range(1,n):
+        h[i] = min(i+2, n)
+    return h
 
+h2(4)
+n = 6
+coef(n, h2(n))
+
+#%%
+
+q_fact('q', 4)
+q_binom('q', 6,5)
