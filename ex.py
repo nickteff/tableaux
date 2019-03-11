@@ -2,32 +2,9 @@
 #%%
 from algo import *
 import pandas as pd
+import numpy as np
 #%%
-# RSK('341')
 
-# for p in permutations(range(1,4)):
-#     print(p, desc(p))
-# p = [1,2,3]
-# p.reverse()
-# p
-# for p in permutations(range(1,4)):
-#     print(p, PRSK(p[::-1]))
-# RSK('111')
-# c = []
-# for p in permutations(range(4)):
-#     if code(p) in c:
-#         pass
-#     else: c.append(code(p))
-
-
-# for p in permutations(range(5)):
-#     c = code(p); s = sum(c[1].values())
-#     print(c[0], s, RSK(c[0]))
-
-# l = []
-# for p in permutations(range(1,5)):
-#     l.append((p, desc(p), RSK(p)))
-q_binom('q', 5,4)
 #%%
 q = symbols('q')
 
@@ -60,18 +37,40 @@ df = ex_df(5, 2)
 
 
 #%%
-def h2(n):
-    h = [i for i in range(n)]
-    h[0] = 3
-    for i in range(1,n):
-        h[i] = min(i+2, n)
-    return h
 
-h2(4)
 n = 6
-coef(n, h2(n))
-
+c = coef(4, 2)
+c[2][(2,2)]
 #%%
 
 q_fact('q', 4)
 q_binom('q', 6,5)
+perm(3, [3,3,3])
+perm(4, [3,3,4,4])
+perm(5, [3,3,4,5,5])
+perm(6, [3,3,4,5,6,6])
+perm(7, [3,3,4,5,6,7,7])
+perm(8, [3,3,4,5,6,7,8,8])
+
+perm(1, [1])
+
+perm(2, [2,2])
+
+perm(3, [2,3,3])
+
+perm(4, [2,3,4,4])
+coef(5, [2,3,4,5,5])
+perm(5, [2,3,4,5,5])
+partitions(5)
+perm(6, [2,3,4,5,6,6])
+
+perm(7, [2,3,4,5,6,7,7])
+
+
+
+  q_fact('q', 6)
+
+for p in permutations(list(range(3))):
+    c, d = code(p)
+    d = sum(d.values())
+    print(c, d)

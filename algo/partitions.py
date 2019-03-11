@@ -5,6 +5,73 @@ from sympy.combinatorics import Permutation
 
 from algo import permutations
 
+def partitions(n):
+    p = [1 for i in range(n)]
+    P = [p]
+
+    N = 0
+    while [n] not in P:
+        p = P[N].copy()
+        l = len(p)
+        #print(p)
+        q = p[-1]
+        #print(q, p)
+        if q > 1:
+            p.append(q-1)
+            q = 1
+        else:
+            p = p[:-1]
+        for i in range(l-1):
+            pp = p.copy()
+            if sum(pp) > n:
+                continue
+            #print(i, pp)
+            if i == 0:
+                pp[0] = min(pp[0] + 1, n)
+                if pp in P:
+                    continue
+                else:
+                    P.append(pp)
+                    continue
+
+            elif pp[i] < pp[i-1]:
+                pp[i] += 1
+                if sum(pp) > n:
+                    continue
+                elif pp in P:
+                    continue
+                else:
+                    P.append(pp)
+                    continue
+            else:
+                continue
+
+        N += 1
+
+    P.sort()
+    P.reverse()
+    return P
+
+def K(n):
+    coefs = {}
+    inner = {tuple(q): 0 for q in partitions(n)}
+    for p in partitions(n):
+        #print(p)
+        coefs[tuple(p)] = inner.copy()
+        seq = [[i+1]*p[i] for i in range(len(p))]
+        seq = [i for sub in seq for i in sub]
+        q = []
+        for perm in permutations(seq):
+            if perm not in q:
+                P, Q = RSK(perm)
+                q.append(perm)
+                if reading_word(Q) == list(range(1, n+1)):
+                    coefs[tuple(p)][shape(P)] += 1
+
+    coefs = [coefs[p][i] for p in list(coefs) for i in list(coefs[p])]
+    coefs = np.array(coefs).reshape(len(inner), len(inner)).T
+    return coefs
+
 def RSK(p):
     '''Given a permutation p, spit out a pair of Young tableaux'''
     P = []; Q = []
@@ -122,6 +189,19 @@ def coef(n, h):
 
     coefs = {i:coefs[i] for i in coefs.keys() if coefs[i] != {}}
     return coefs
+
+def perm(n, h):
+    k = np.linalg.inv(K(n))
+    C = coef(n, h)
+
+    for i in range(len(C.keys())):
+        v = []
+        for p in partitions(n):
+            if tuple(p) in list(C[i].keys()):
+                v.append(C[i][tuple(p)])
+            else:
+                v.append(0)
+        print(k@np.array(v))
 
 def reading_word(P):
     return [item for sublist in P for item in sublist]
