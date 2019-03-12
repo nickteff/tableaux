@@ -37,14 +37,7 @@ df = ex_df(5, 2)
 
 
 #%%
-def h2(n):
-    h = [i for i in range(n)]
-    h[0] = 3
-    for i in range(1,n):
-        h[i] = min(i+2, n)
-    return h
 
-h2(5)
 n = 6
 c = coef(4, 2)
 c[2][(2,2)]
@@ -52,22 +45,32 @@ c[2][(2,2)]
 
 q_fact('q', 4)
 q_binom('q', 6,5)
+perm(3, [3,3,3])
+perm(4, [3,3,4,4])
+perm(5, [3,3,4,5,5])
+perm(6, [3,3,4,5,6,6])
+perm(7, [3,3,4,5,6,7,7])
+perm(8, [3,3,4,5,6,7,8,8])
+
+perm(1, [1])
+
+perm(2, [2,2])
+
+perm(3, [2,3,3])
+
+perm(4, [2,3,4,4])
+coef(5, [2,3,4,5,5])
+perm(5, [2,3,4,5,5])
+partitions(5)
+perm(6, [2,3,4,5,6,6])
+
+perm(7, [2,3,4,5,6,7,7])
 
 
 
+  q_fact('q', 6)
 
-K(4)
-
-
-
-
-
-
-
-
-
-K
-k = np.linalg.inv(K(3,0,1))
-
-
-m = k@np.array([2,2,0])
+for p in permutations(list(range(3))):
+    c, d = code(p)
+    d = sum(d.values())
+    print(c, d)

@@ -193,6 +193,7 @@ def coef(n, h):
 def perm(n, h):
     k = np.linalg.inv(K(n))
     C = coef(n, h)
+
     for i in range(len(C.keys())):
         v = []
         for p in partitions(n):
@@ -200,7 +201,7 @@ def perm(n, h):
                 v.append(C[i][tuple(p)])
             else:
                 v.append(0)
-    return (k@np.array(v))
+        print(k@np.array(v))
 
 def reading_word(P):
     return [item for sublist in P for item in sublist]
