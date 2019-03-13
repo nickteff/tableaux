@@ -71,5 +71,5 @@ for i in d:
     print()
 c = [2,3,5,1,4,7,6]
 
-for p in permutations([1,2,3]):
-    print(p, dec2exc(p), code(zero_d2e(p)), RSK(code(zero_d2e(p))[0]))
+for p in permutations([1,2,3,4]):
+    print(p, code(zero_d2e(p)), RSK(code(zero_d2e(p))[0]))
