@@ -63,14 +63,13 @@ coef(5, [2,3,4,5,5])
 perm(5, [2,3,4,5,5])
 partitions(5)
 perm(6, [2,3,4,5,6,6])
-
+partitions(7)
 perm(7, [2,3,4,5,6,7,7])
 
+d =
+for i in d:
+    print()
+c = [2,3,5,1,4,7,6]
 
-
-  q_fact('q', 6)
-
-for p in permutations(list(range(3))):
-    c, d = code(p)
-    d = sum(d.values())
-    print(c, d)
+for p in permutations([1,2,3,4]):
+    print(p, code(zero_d2e(p)), RSK(code(zero_d2e(p))[0]))

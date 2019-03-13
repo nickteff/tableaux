@@ -1,3 +1,5 @@
+from sympy.combinatorics import Permutation
+
 def permutations (orig_list):
     """
     Given a orig_list return a generator of all of the permutations of orig_list
@@ -97,3 +99,20 @@ def inv(p):
 
 def length(p):
     return len(inversions(p))
+
+def dec2exc(c):
+    if min(c) == 1:
+        cc = [i-1 for i in c]
+        c = cc
+    x = [i for i in range(1,len(c)) if c[i] == max(c[:i+1])]
+    x.append(0)
+    x.append(len(c))
+    x.sort()
+
+    cycle = [c[x[i[0]]:x[i[1]]] for i in zip(range(len(x)-1), range(1,len(x))) ]
+    e = Permutation(cycle).array_form
+
+    return [len(e) - e[len(e)-1 - i] for i in range(len(e))]
+
+def zero_d2e(p):
+    return [i-1 for i in dec2exc(p)]
