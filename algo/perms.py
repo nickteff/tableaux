@@ -100,18 +100,63 @@ def inv(p):
 def length(p):
     return len(inversions(p))
 
-def dec2exc(c):
+def standard_form(p):
+    """
+    Return the standard form of the permutation, i.e. cycles written with largest
+    element first, and largest elements in increasing order.
+    """
+    p = Permutation(p).full_cyclic_form
+
+    m = [max(cycle) for cycle in p]
+    m.sort()
+
+    pp = []
+    for mm in m:
+
+        for cycle in p:
+            if mm in cycle:
+                l = len(cycle)
+                if l == 1:
+                    pp.append(cycle)
+                else:
+                    z = cycle.index(mm)
+                    cycle = [cycle[(z+i)%l] for i in range(l)]
+                    pp.append(cycle)
+            else:
+                pass
+    return pp
+
+
+def foata(p, word=True):
+    """
+    Return the Foata transformation of p, i.e. the word p^ obtained by deleting
+    parentheses from the standard cyclic form of p
+    """
+    if word:
+        if min(p) == 1:
+            p = [i-1 for i in p]
+        p = standard_form(p)
+    return [i for cycle in p for i in cycle]
+
+def inverse_foata(c):
+    """
+    Return the inverse of the permutation word c wtitten in standard cyclic form
+    """
     if min(c) == 1:
         cc = [i-1 for i in c]
         c = cc
+        bit = 1
     x = [i for i in range(1,len(c)) if c[i] == max(c[:i+1])]
     x.append(0)
     x.append(len(c))
     x.sort()
+    return [c[x[i[0]]:x[i[1]]] for i in zip(range(len(x)-1), range(1,len(x))) ]
 
-    cycle = [c[x[i[0]]:x[i[1]]] for i in zip(range(len(x)-1), range(1,len(x))) ]
-    e = Permutation(cycle).array_form
-
+def dec2exc(c):
+    """
+    Giving a permutation c with k descents return the permuation with k excedances
+    """
+    e = Permutation(inverse_foata(c)).array_form
     return [len(e) - e[len(e)-1 - i] for i in range(len(e))]
 
 def zero_d2e(p):
