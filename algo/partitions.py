@@ -13,19 +13,16 @@ def partitions(n):
     while [n] not in P:
         p = P[N].copy()
         l = len(p)
-        #print(p)
         q = p[-1]
-        #print(q, p)
+
         if q > 1:
-            p.append(q-1)
+            p[-1] = q-1
             q = 1
         else:
             p = p[:-1]
+
         for i in range(l-1):
             pp = p.copy()
-            if sum(pp) > n:
-                continue
-            #print(i, pp)
             if i == 0:
                 pp[0] = min(pp[0] + 1, n)
                 if pp in P:
@@ -45,12 +42,12 @@ def partitions(n):
                     continue
             else:
                 continue
-
         N += 1
 
     P.sort()
     P.reverse()
     return P
+
 
 def K(n):
     coefs = {}
@@ -165,7 +162,12 @@ def transpose(P):
 def P_inv(P, h):
     inv = 0
     n = max(reading_word(P))
-    columns = {i: P[r].index(i) for r in range(len(P)) for i in range(1, n+1) if i in P[r]}
+    columns = {
+        i: P[r].index(i)
+            for r in range(len(P))
+                for i in range(1, n+1)
+                    if i in P[r]
+        }
     for i in range(1, n+1):
         m = min(n, max(incomparable(i, h)))
         for j in range(i+1, m+1):
@@ -190,10 +192,10 @@ def coef(n, h):
     coefs = {i:coefs[i] for i in coefs.keys() if coefs[i] != {}}
     return coefs
 
-def perm(n, h):
+def perm_coefs(n, h):
     k = np.linalg.inv(K(n))
     C = coef(n, h)
-
+    pc = []
     for i in range(len(C.keys())):
         v = []
         for p in partitions(n):
@@ -201,7 +203,9 @@ def perm(n, h):
                 v.append(C[i][tuple(p)])
             else:
                 v.append(0)
-        print(k@np.array(v))
+        pc.append(k@np.array(v))
+    return np.array(pc)
 
+partitions(8)
 def reading_word(P):
     return [item for sublist in P for item in sublist]

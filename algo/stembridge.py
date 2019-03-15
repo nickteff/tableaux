@@ -121,3 +121,5 @@ def all_perms(n):
         a, f = code(p)
         p = [1+i for i in p]
         print(p, RSK(a), f)
+
+        

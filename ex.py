@@ -1,5 +1,7 @@
-
+%reload_ext algo
 #%%
+from operator import mul
+from math import factorial
 from algo import *
 import pandas as pd
 import numpy as np
@@ -45,31 +47,56 @@ c[2][(2,2)]
 
 q_fact('q', 4)
 q_binom('q', 6,5)
-perm(3, [3,3,3])
-perm(4, [3,3,4,4])
-perm(5, [3,3,4,5,5])
-perm(6, [3,3,4,5,6,6])
-perm(7, [3,3,4,5,6,7,7])
-perm(8, [3,3,4,5,6,7,8,8])
+perm_coefs(3, [1, 3, 3])
 
-perm(1, [1])
+def permDF(n, h):
+    c = [("".join([str(k)+"::" for k in p]))[:-2] for p in partitions(n)]
+    df = pd.DataFrame(perm_coefs(n,h), columns=c)
+    df.index.name = df.index = df.index.rename('degree')
+    return df
 
-perm(2, [2,2])
 
-perm(3, [2,3,3])
+permDF(3,[2,3,3])
+permDF(3, [3,3,3])
+[0,0,0], [1,1,1], [q,q,q]
+permDF(4, [2,3,4,4])
+permDF(4, [3,3,4,4])
 
-perm(4, [2,3,4,4])
-coef(5, [2,3,4,5,5])
-perm(5, [2,3,4,5,5])
-partitions(5)
-perm(6, [2,3,4,5,6,6])
-partitions(7)
-perm(7, [2,3,4,5,6,7,7])
 
-d =
-for i in d:
-    print()
-c = [2,3,5,1,4,7,6]
+
+
+
+
+
+
+
+df = permDF(n,h)
+
+
+for n in range(3,8):
+    h = list(range(n))
+    for j in range(n):
+        if j == 0:
+            h[j] = min(3, n)
+        if j == 1:
+            h[j] = min(3, n)
+        else:
+            h[j] = min(j+2, n)
+    permDF(n, h).to_csv("".join([str(k) for k in h])+".csv", sep=";")
+
+pd.read_csv("".join([str(k) for k in [3,3,4,4]])+".csv", sep=";")
+
+"".join([str(i) for i in h])
+p = [3,2,2]
+
+def check(n, h):
+    df = permDF(n,h)
+    v = [factorial(n)/np.prod(np.array([factorial(i) for i in p])) for p in partitions(n)]
+    print(sum(df@v) == factorial(n))
+check(5, [2,4,4,5,5])
+
+
+
 
 for p in permutations([1,2,3,4]):
     print(p, code(zero_d2e(p)), RSK(code(zero_d2e(p))[0]))
