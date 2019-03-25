@@ -20,3 +20,8 @@ def q_fact(q, n):
 def q_binom(q, n, k):
     return expand(cancel(q_fact(q, n)/(q_fact(q, n-k)*q_fact(q, k))))
 
+
+q = symbols("q")
+
+
+expand((1+q)*(1+2*q))

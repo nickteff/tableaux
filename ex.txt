@@ -12,7 +12,7 @@ Inversions — inv(T) = #{ i < j where i is west of j}
 
 132		1
 
-12		0
+12		1
 3
 
 Marked Tableaux is a semi standard table of shape lambda with entries in {0, 1, 2, …, k}  for k in NN so that each a in [k] occurs at least twice, together with a mark on one occurrence of each a in [k].  The mark cannot be the left most a, and
