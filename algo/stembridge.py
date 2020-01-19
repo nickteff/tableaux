@@ -3,6 +3,7 @@ from sympy.combinatorics import Permutation
 from .perms import permutations
 from .partitions import RSK
 
+
 def max_move(p):
     """
     Given a non-identity permutation caluculate the max
@@ -20,7 +21,7 @@ def get_cycle(p):
         if m in c:
             l = len(c)
             z = c.index(m)
-            return [c[(z+i)%l] for i in range(l)]
+            return [c[(z + i) % l] for i in range(l)]
 
 
 def get_r(p):
@@ -30,7 +31,7 @@ def get_r(p):
     r = 0
     c = get_cycle(p)
     while r < len(c):
-        if c[r] > c[(r+1)%len(c)]:
+        if c[r] > c[(r + 1) % len(c)]:
             r += 1
         else:
             return r
@@ -43,13 +44,12 @@ def get_s(p):
     c = get_cycle(p)
     r = get_r(p)
     ss = []
-    for s in range(r,len(c)):
-        if c[s] > c[(s+1)%len(c)]:
+    for s in range(r, len(c)):
+        if c[s] > c[(s + 1) % len(c)]:
             ss.append(s)
-        if c[r-1] <= c[(s+1)%len(c)]:
+        if c[r - 1] <= c[(s + 1) % len(c)]:
             ss.append(s)
     return min(ss)
-
 
 
 def new_perm(p):
@@ -63,13 +63,14 @@ def new_perm(p):
     l = len(c)
     s = get_s(p)
     cm = [i for i in range(len(pp)) if m in pp[i]][0]
-    if s == l-1:
+    if s == l - 1:
         del pp[cm]
         return Permutation(pp).array_form
     else:
-        del c[1:s+1]
+        del c[1:s + 1]
         pp[cm] = c
         return Permutation(pp).array_form
+
 
 def new_triple(p, a, f):
     """
@@ -83,23 +84,23 @@ def new_triple(p, a, f):
     r = get_r(p)
     s = get_s(p)
     cm = [i for i in range(len(pp)) if m in pp[i]][0]
-    if s == l-1:
+    if s == l - 1:
         del pp[cm]
         p = Permutation(pp).array_form
         for i in c:
-            a[i] = k+1
-        f[k+1] = l - r
+            a[i] = k + 1
+        f[k + 1] = l - r
     else:
-        for i in c[1:s+1]:
-            a[i] = k+1
-        if c[s] > c[(s+1)%l]:
-            f[k+1] = s - r
-        if c[r-1] <= c[(s+1)%l]:
-            f[k+1] = s - r + 1
-        del c[1:s+1]
+        for i in c[1:s + 1]:
+            a[i] = k + 1
+        if c[s] > c[(s + 1) % l]:
+            f[k + 1] = s - r
+        if c[r - 1] <= c[(s + 1) % l]:
+            f[k + 1] = s - r + 1
+        del c[1:s + 1]
         pp[cm] = c
         p = Permutation(pp).array_form
-    return (p, a, f)
+    return p, a, f
 
 
 def code(p):
@@ -108,10 +109,11 @@ def code(p):
     -- See Stembridge
     """
     a = np.zeros_like(p)
-    f = {0:0}
+    f = {0: 0}
     while p != list(range(len(p))):
         p, a, f = new_triple(p, a, f)
-    return list(a),f
+    return list(a), f
+
 
 def all_perms(n):
     """
@@ -119,7 +121,5 @@ def all_perms(n):
     """
     for p in permutations(range(n)):
         a, f = code(p)
-        p = [1+i for i in p]
+        p = [1 + i for i in p]
         print(p, RSK(a), f)
-
-        

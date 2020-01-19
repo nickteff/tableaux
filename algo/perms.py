@@ -1,6 +1,7 @@
 from sympy.combinatorics import Permutation
 
-def permutations (orig_list):
+
+def permutations(orig_list):
     """
     Given a orig_list return a generator of all of the permutations of orig_list
     """
@@ -14,11 +15,12 @@ def permutations (orig_list):
     for n in sorted(orig_list):
         new_list = orig_list[:]
         pos = new_list.index(n)
-        del(new_list[pos])
+        del (new_list[pos])
         new_list.insert(0, n)
         for resto in permutations(new_list[1:]):
             if new_list[:1] + resto != orig_list:
                 yield new_list[:1] + resto
+
 
 def excedances(p):
     """
@@ -28,7 +30,7 @@ def excedances(p):
     Parameters
     ----------
 
-    p : interable as a permutation in one-line notation
+    p : iterable as a permutation in one-line notation
 
     Returns
     -------
@@ -46,7 +48,7 @@ def exc(p):
     Parameters
     ----------
 
-    p : interable as a permutation in one-line notation
+    p : iterable as a permutation in one-line notation
 
     Returns
     -------
@@ -54,6 +56,7 @@ def exc(p):
     e : int the number of excedances of p
     """
     return len(excedances(p))
+
 
 def descents(p):
     """
@@ -63,14 +66,15 @@ def descents(p):
     Parameters
     ----------
 
-    p : interable as a permutation in one-line notation
+    p : iterable as a permutation in one-line notation
 
     Returns
     -------
 
     e : list of indices where a descent occurs
     """
-    return [i for i in range(len(p)-1) if p[i] > p[i+1]]
+    return [i for i in range(len(p) - 1) if p[i] > p[i + 1]]
+
 
 def desc(p):
     """
@@ -80,7 +84,7 @@ def desc(p):
     Parameters
     ----------
 
-    p : interable as a permutation in one-line notation
+    p : iterable as a permutation in one-line notation
 
     Returns
     -------
@@ -89,16 +93,33 @@ def desc(p):
     """
     return len(descents(p))
 
-def inversions(p):
 
-    return ([(i,j) for i in range(len(p)-1)
-                for j in range(i, len(p)) if p[i] > p[j]])
+def inversions(p):
+    """
+    Given a permutation p of [n] an inversion occurs when i < j and
+    that p[i] > p[j].  This function calculates the number of inversion of p
+
+    Parameters
+    ----------
+
+    p : iterable as a permutation in one-line notation
+
+    Returns
+    -------
+
+    e : int of the number of descents of p
+    """
+    return ([(i, j) for i in range(len(p) - 1)
+             for j in range(i, len(p)) if p[i] > p[j]])
+
 
 def inv(p):
     return len(inversions(p))
 
+
 def length(p):
     return len(inversions(p))
+
 
 def standard_form(p):
     """
@@ -120,7 +141,7 @@ def standard_form(p):
                     pp.append(cycle)
                 else:
                     z = cycle.index(mm)
-                    cycle = [cycle[(z+i)%l] for i in range(l)]
+                    cycle = [cycle[(z + i) % l] for i in range(l)]
                     pp.append(cycle)
             else:
                 pass
@@ -134,30 +155,33 @@ def foata(p, word=True):
     """
     if word:
         if min(p) == 1:
-            p = [i-1 for i in p]
+            p = [i - 1 for i in p]
         p = standard_form(p)
     return [i for cycle in p for i in cycle]
+
 
 def inverse_foata(c):
     """
     Return the inverse of the permutation word c wtitten in standard cyclic form
     """
     if min(c) == 1:
-        cc = [i-1 for i in c]
+        cc = [i - 1 for i in c]
         c = cc
         bit = 1
-    x = [i for i in range(1,len(c)) if c[i] == max(c[:i+1])]
+    x = [i for i in range(1, len(c)) if c[i] == max(c[:i + 1])]
     x.append(0)
     x.append(len(c))
     x.sort()
-    return [c[x[i[0]]:x[i[1]]] for i in zip(range(len(x)-1), range(1,len(x))) ]
+    return [c[x[i[0]]:x[i[1]]] for i in zip(range(len(x) - 1), range(1, len(x)))]
+
 
 def dec2exc(c):
     """
-    Giving a permutation c with k descents return the permuation with k excedances
+    Giving a permutation c with k descents return the permutation with k excedances
     """
     e = Permutation(inverse_foata(c)).array_form
-    return [len(e) - e[len(e)-1 - i] for i in range(len(e))]
+    return [len(e) - e[len(e) - 1 - i] for i in range(len(e))]
+
 
 def zero_d2e(p):
-    return [i-1 for i in dec2exc(p)]
+    return [i - 1 for i in dec2exc(p)]
