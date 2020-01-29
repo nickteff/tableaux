@@ -72,12 +72,12 @@ def K(n):
 
 
 def RSK(p):
-    '''Given a permutation p, spit out a pair of Young tableaux'''
+    """Given a permutation p, spit out a pair of Young tableaux"""
     P = [];
     Q = []
 
     def insert(m, n=0):
-        '''Insert m into P, then place n in Q at the same place'''
+        """Insert m into P, then place n in Q at the same place"""
         for r in range(len(P)):
             if m >= P[r][-1]:
                 P[r].append(m);
@@ -97,8 +97,46 @@ def intersection(lst1, lst2):
     return list(set(lst1) & set(lst2))
 
 
+def max_P(P):
+    return max(max(P[r]) for r in range(len(P)))
+
+
+def min_P(P):
+    return min(min(P[r]) for r in range(len(P)))
+
+
 def shape(P):
     return tuple(len(P[r]) for r in range(len(P)))
+
+
+def content(P):
+    j = 0
+    t = []
+    for i in range(max_P(P) + 1):
+        t.append(0)
+        for r in range(len(P)):
+            for c in range(len(P[r])):
+                if P[r][c] == i:
+                    t[i] = t[i] + 1
+    t.sort(reverse=True)
+    # t = [i for i in t if i > 0]
+    return tuple(t)
+
+
+def h_gen(n):
+    hh = [[i for i in range(1, n + 1)]]
+    j = 0
+    h = hh[0]
+    while h != [n for i in range(n)]:
+        for i in range(n - 1):
+            if h[i] < h[i + 1]:
+                h_new = h.copy()
+                h_new[i] = h[i] + 1
+                if h_new not in hh:
+                    hh.append(h_new)
+        j = j + 1
+        h = hh[j]
+    return hh
 
 
 def incomparable(i, h):
@@ -162,7 +200,7 @@ def transpose(P):
         for j in range(len(P[i])):
             PP.append([j, P[i][j]])
 
-    n = max(max(P))
+    n = max_P(P)
     ind = [[k[1] for k in PP if k[0] == j] for j in range(n + 1)]
 
     p = []

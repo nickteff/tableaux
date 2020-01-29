@@ -1,6 +1,6 @@
 Gasharov Tableaux —
 	 if j is immediately below  i then j - i \ge 2
-	if j is to next right of i then  not (i - j \ge 2)
+	if j is to right of i then  not (i - j \ge 2)
 
 Inversions — inv(T) = #{ i < j where i is west of j}
 

@@ -1,7 +1,7 @@
 # %%
 import copy
 
-from algo import transpose
+from algo import transpose, max_P, min_P
 
 
 def row_number(P, i):
@@ -32,14 +32,6 @@ def T_fin(T, i):
             if T[r][c] < 0:
                 T[r][c] = T[r][c] + i
     return T
-
-
-def max_P(P):
-    return max(max(P[r]) for r in range(len(P)))
-
-
-def min_P(P):
-    return min(min(P[r]) for r in range(len(P)))
 
 
 def remove(P, T, PP, i, l):
@@ -90,7 +82,7 @@ def chain_insertion(P, T, l, PP=None):
 def pie(P):
     i = 1
     if transpose(P) == [list(range(1, len(P) + 1))]:
-        return P
+        return [[0] for i in range(max_P(P))]
     P, T, PP = chain_insertion(P, T_0(P), -i)
     i = i + 1
     while P != [] and transpose(P) != [list(range(1, len(P) + 1))]:
@@ -102,4 +94,4 @@ def pie(P):
         for j in list(range(1, len(P) + 1)):
             P, T, PP = remove(P, T, PP, j, 0)
 
-            return T_fin(T, i)
+        return T_fin(T, i)
