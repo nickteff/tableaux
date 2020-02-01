@@ -1,9 +1,6 @@
 #%%
 from bisect import bisect_right
-import numpy as np
-from sympy.combinatorics import Permutation
-from algo import descents, desc, RSK
-from algo import RSK
+from algo import descents, desc
 
 
 def max_descent(p):
