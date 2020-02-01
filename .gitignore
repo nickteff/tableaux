@@ -104,6 +104,10 @@ venv.bak/
 # VS Code directory
 .vscode
 
+# Pycharm project stuff
+
+.idea
+
 # macOS stuff
 .DS_Store
 
