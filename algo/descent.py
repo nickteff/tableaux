@@ -1,5 +1,4 @@
-#%%
-from bisect import bisect_right
+from bisect import bisect
 from algo import descents, desc
 
 
@@ -16,30 +15,30 @@ def find_valleys(p):
 
 
 def remover(pp):
-    mn = index_max_descent(pp)  # location of max descent
-    m = max_descent(pp)  # value of max descent
-    try:
-        M = min([j for j in pp[mn:] if j > m])  # value of lowest value greater than max descent
-        MN = pp.index(M)  # location of above
-    except:
-        MN = len(pp)  # last value if nothing is bigger than max descent
-    pq = pp[mn:MN]  # substring between max descent and smallest value bigger than max descent
-    valleys = find_valleys(pq)  # find the valleys in the substring
-    if len(valleys) == 0:  # return the substring if no valleys
-        return pq
-    else:
-        v = min(valleys)  # pick the first valley
-        des_v = descents(pq[v:])  # look at the descents after the first valley
-        if des_v != []:  # if no valleys then recurse
-            return remover(pq[v:])
+    if pp == []:
+        return pp
+    N = pp.index(max(pp))
+    if N == len(pp) - 1:
+        return remover(pp[:-1])
+    elif N > 0:
+        return remover(pp[N:])
+    else: # the max is at the begninning
+        valleys = find_valleys(pp)  # find the valleys in the substring
+        if len(valleys) == 0:  # return the substring if no valleys
+            return pp
         else:
-            climbs = [j for j in pq[v:] if bisect_right(pq[v - 1::-1], j) != 0]
-            if climbs == []:
-                return pq
+            v = min(valleys)  # pick the first valley
+            des_v = descents(pp[v:])  # look at the descents after the first valley
+            if des_v != []:  # if descents then recurse
+                return remover(pp[v:])
             else:
-                j = min(climbs)
-                return [i for i in pq if (i < j)]
-
+                climbs = [j for j in pp[v:] if (bisect(pp[v - 1::-1], j) != 0)] # note we are looking in reverse
+                if climbs == []:                    
+                    return pp
+                else:
+                    j = min(climbs)
+                    return [i for i in pp if (i < j)]
+            
 
 def remove(p, q):
     return [i for i in p if i not in q]
@@ -66,7 +65,10 @@ def descent_algo(p):
     deg = {i: deg[i] for i in deg.keys() if deg[i] != 0}
     return a, deg
 
+"""Lemma: If m appears to the right of N in w, then a[m] > 0"""
+"""Lemma: if m appears to the left of N in w, then a[m] == 0 or a[m] > a[n]"""
 
-"""lemma:  If m is the maximum descent and there exists M > m with w_i = m and w_j = N where i < j, then m+1,m+2,...,n are all to the right of m and appear in consecutive order.
+
+"""lemma:  If m is the maximum descent and there exists M > m with w_i = m and w_j = M where i < j, then m+1,m+2,...,M are all to the right of m and appear in consecutive order.
 
 pf. if any appear before m, then there must be a descent to get down to m since m is a descent, so none can be before.  Therefore they are all after, again if they are not in consecutive order then a descent must appear to get to all of them."""
