@@ -97,7 +97,7 @@ def desc(p):
 def inversions(p):
     """
     Given a permutation p of [n] an inversion occurs when i < j and
-    that p[i] > p[j].  This function calculates the number of inversion of p
+    that p[i] > p[j].  This function calculates the pairs (i,j) of inversion of p
 
     Parameters
     ----------
@@ -107,13 +107,25 @@ def inversions(p):
     Returns
     -------
 
-    e : int of the number of descents of p
+    i : a list of pairs (i,j) of descents of p
     """
-    return ([(i, j) for i in range(len(p) - 1)
-             for j in range(i, len(p)) if p[i] > p[j]])
+    return [(i, j) for i in range(len(p) - 1)
+            for j in range(i, len(p)) if p[i] > p[j]]
 
 
 def inv(p):
+    """
+    Given a permutation p of [n] an inversion occurs when i < j and
+    that p[i] > p[j].  This function calculates the number of inversion of p
+
+    Parameters
+    ----------
+    p : iterable as permutation in one-line notation
+
+    Returns
+    -------
+    i: int of the number of inversion of p
+    """
     return len(inversions(p))
 
 
