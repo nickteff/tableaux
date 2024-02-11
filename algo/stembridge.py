@@ -1,6 +1,6 @@
 import numpy as np
 from sympy.combinatorics import Permutation
-from .perms import permutations
+from itertools import permutations
 from .partitions import RSK
 
 
@@ -74,7 +74,16 @@ def new_perm(p):
 
 def new_triple(p, a, f):
     """
-    Given a triple p a permutation, a a sequence, and f an index function.  Return the next triple from Stembridge's algorithm
+    Given a triple p, a permutation p, a sequence a, and an index function f,
+    return the next triple from Stembridge's algorithm.
+
+    Parameters:
+    p (list): A permutation represented as a list of integers.
+    a (list): A sequence represented as a list of integers.
+    f (dict): An index function represented as a dictionary.
+
+    Returns:
+    tuple: The next triple consisting of the updated permutation p, sequence a, and index function f.
     """
     k = max(a)
     pp = Permutation(p).full_cyclic_form

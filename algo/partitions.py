@@ -2,12 +2,12 @@ from bisect import bisect
 import numpy as np
 from sympy.combinatorics import Permutation
 
-from algo import permutations
+from itertools import permutations
 
 
 def partitions(n):
     """
-    A simple generator of the list of integer partiions
+    A simple generator of the list of integer partitions
 
     Parameters
     ----------
@@ -19,57 +19,38 @@ def partitions(n):
     list of lists
         A list of partitions (as lists) in descending lexicographic order
     """
-    p = [1 for i in range(n)] # start with the column partition
-    P = [p] # intialize with p
-
-    N = 0
-    while [n] not in P: # build up until the row partition is present
-        p = P[N].copy()
-        l = len(p)
-        q = p[-1] #grab the last entry
-
-        # shorten the last row by 1 
-        if q > 1: 
-            p[-1] = q - 1 
-            q = 1
+    def generate_partitions(n, p):
+        if n == 0:
+            yield p
         else:
-            p = p[:-1] 
+            for i in range(min(n, p[-1]), 0, -1):
+                yield from generate_partitions(n - i, p + [i])
 
-        # try to add a box to each of the rows and add when possible
-        for i in range(l - 1):
-            pp = p.copy()
-            if i == 0:
-                pp[0] = min(pp[0] + 1, n)
-                if pp in P:
-                    continue
-                else:
-                    P.append(pp)
-                    continue
-
-            elif pp[i] < pp[i - 1]:
-                pp[i] += 1
-                if sum(pp) > n:
-                    continue
-                elif pp in P:
-                    continue
-                else:
-                    P.append(pp)
-                    continue
-            else:
-                continue
-        N += 1
-
-    P.sort()
-    P.reverse()
-    return P
+    return [p[1:] for p in generate_partitions(n, [n])]
 
 def RSK(p):
-    """Given a permutation p, spit out a pair of Young tableaux"""
+    """Given a permutation p, spit out a pair of Young tableaux.
+
+    Args:
+        p (list): The input permutation.
+
+    Returns:
+        tuple: A pair of Young tableaux represented as two lists, P and Q.
+    """
     P = []
     Q = []
 
     def insert(m, n=0):
-        """Insert m into P, then place n in Q at the same place"""
+        """
+        Insert m into P, then place n in Q at the same place
+
+        Parameters:
+        m (int): The value to be inserted into P.
+        n (int, optional): The value to be inserted into Q. Default is 0.
+
+        Returns:
+        None
+        """
         for r in range(len(P)):
             if m >= P[r][-1]:
                 P[r].append(m)
@@ -85,9 +66,32 @@ def RSK(p):
     return (P, Q)
 
 def reading_word(P):
+    """
+    Flatten the nested list P and return a list of all the elements.
+
+    Parameters:
+    P (list): A nested list representing partitions.
+
+    Returns:
+    list: A list containing all the elements from the nested list P.
+    """
     return [item for sublist in P for item in sublist]
 
 def shape(P):
+    """
+    Returns the shape of a partition.
+
+    Parameters:
+    P (list): The partition.
+
+    Returns:
+    tuple: The shape of the partition, represented as a tuple of the lengths of each row.
+
+    Example:
+    >>> P = [[1, 2, 3], [4, 5], [6]]
+    >>> shape(P)
+    (3, 2, 1)
+    """
     return tuple(len(P[r]) for r in range(len(P)))
 
 def K(n):
@@ -143,7 +147,15 @@ def min_P(P):
 
 
 def content(P):
-    j = 0
+    """
+    Calculates the content of a partition.
+
+    Parameters:
+    P (list): The partition represented as a list of lists.
+
+    Returns:
+    tuple: The content of the partition as a tuple.
+    """
     t = []
     for i in range(max_P(P) + 1):
         t.append(0)
@@ -172,6 +184,16 @@ def h_gen(n):
 
 
 def incomparable(i, h):
+    """
+    Returns a list of numbers that are incomparable to the given number 'i' in the list 'h'.
+
+    Parameters:
+    i (int): The number to compare against.
+    h (list): The list of numbers.
+
+    Returns:
+    list: A list of numbers that are incomparable to 'i' in 'h'.
+    """
     top = h[i - 1]
     bottom = min([j + 1 for j in range(len(h)) if h[j] >= i])
     return list(range(bottom, top + 1))
@@ -183,15 +205,15 @@ def h_banded_function(i, n):
 
     Parameters
     ----------
-    i : [type]
-        [description]
-    n : [type]
-        [description]
+    i : int
+        The index of the banded function.
+    n : int
+        The size of the banded function.
 
     Returns
     -------
-    [type]
-        [description]
+    list
+        The banded function as a list of integers.
     """
     return [min(j + i, n) for j in range(n)]
 
@@ -221,15 +243,15 @@ def P_inv(P, h):
 
     Parameters
     ----------
-    P : [type]
-        [description]
-    h : [type]
-        [description]
+    P : list of lists
+        The tableau represented as a list of lists.
+    h : list
+        The list of hook lengths corresponding to the tableau.
 
     Returns
     -------
-    [type]
-        [description]
+    int
+        The number of inversions in the tableau.
     """
     inv = 0
     n = max(reading_word(P))
