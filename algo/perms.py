@@ -20,8 +20,8 @@ def excedances(p):
 
 def exc(p):
     """
-    Given a permutation p of [n] a descent is a number i so
-    that p[i] > p[i+1].  This function calculates the number of excedances of p
+    Given a permutation p of [n] an exceedance is a number i so
+    that p[i] > i.  This function calculates the number of excedances of p
 
     Parameters
     ----------
@@ -157,7 +157,6 @@ def inverse_foata(c):
     if min(c) == 1:
         cc = [i - 1 for i in c]
         c = cc
-        bit = 1
     x = [i for i in range(1, len(c)) if c[i] == max(c[:i + 1])]
     x.append(0)
     x.append(len(c))

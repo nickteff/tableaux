@@ -1,7 +1,6 @@
-# %%
 import copy
 
-from algo import transpose, max_P, min_P
+from algo import Tableau
 
 
 def row_number(P, i):
@@ -51,7 +50,7 @@ def chain_insertion(P, T, l, PP=None):
     if PP is None:
         PP = copy.deepcopy(P)
     # Up Phase
-    N = max_P(P)
+    N = P.max_P()
     # find M
     M = N
     while row_number(P, M) > row_number(P, M - 1):
@@ -79,13 +78,13 @@ def chain_insertion(P, T, l, PP=None):
     return P, T, PP
 
 
-def pie(P):
+def pie(P: Tableau):
     i = 1
-    if transpose(P) == [list(range(1, len(P) + 1))]:
+    if P.transpose() == [list(range(1, len(P) + 1))]:
         return [[0] for i in range(max_P(P))]
     P, T, PP = chain_insertion(P, T_0(P), -i)
     i = i + 1
-    while P != [] and transpose(P) != [list(range(1, len(P) + 1))]:
+    while P != [] and P.transpose() != [list(range(1, len(P) + 1))]:
         P, T, PP = chain_insertion(P, T, -i, PP)
         i = i + 1
     if P == []:

@@ -1,11 +1,120 @@
 from bisect import bisect
-import numpy as np
-from sympy.combinatorics import Permutation
-
-from itertools import permutations
 
 
-def partitions(n):
+from itertools import permutations, zip_longest, accumulate
+from typing import List, Tuple, Union
+
+class Tableau(list):
+    """
+    Represents a tableau, which is a nested list representing partitions.
+
+    Inherits from the built-in list class.
+
+    Methods:
+    - reading_word(): Flatten the nested list and return a list of all the elements.
+    - shape(): Returns the shape of the partition.
+    - max_P(): Returns the maximum element in the tableau.
+    - min_P(): Returns the minimum element in the tableau.
+    - transpose(): Returns the transpose of the tableau.
+    - content(): Calculates the content of the tableau.
+    """
+
+    def __init__(self, P: List[List[int]]):
+        super().__init__(P)
+      
+    def reading_word(self) -> List[int]:
+        """
+        Flatten the nested list P and return a list of all the elements.
+
+        Returns:
+        list: A list containing all the elements from the nested list P.
+        """
+        return [item for sublist in self for item in sublist]
+
+    def shape(self) -> Tuple[int, ...]:
+        """
+        Returns the shape of a partition.
+
+        Returns:
+        tuple: The shape of the partition, represented as a tuple of the lengths of each row.
+
+        Example:
+        >>> P = [[1, 2, 3], [4, 5], [6]]
+        >>> P.shape()
+        (3, 2, 1)
+        """
+        return tuple(len(self[r]) for r in range(len(self)))
+
+    def max_P(self) -> int:
+        """
+        Returns the maximum element in the tableau.
+
+        Returns:
+        int: The maximum element in the tableau.
+        """
+        return max(max(sublist) for sublist in self)
+
+    def min_P(self) -> int:
+        """
+        Returns the minimum element in the tableau.
+
+        Returns:
+        int: The minimum element in the tableau.
+        """
+        return min(min(sublist) for sublist in self)
+
+    def transpose(self) -> 'Tableau':
+        """
+        Returns the transpose of the tableau.
+
+        Returns:
+        list: The transpose of the tableau.
+        """
+        # Transpose the tableau using zip_longest and map
+        transposed = list(map(list, zip_longest(*self, fillvalue=None)))
+
+        # Remove None values
+        transposed = [[elem for elem in row if elem is not None] for row in transposed]
+
+        return Tableau(transposed)
+
+    def content(self) -> Tuple[int, ...]:
+        """
+        Calculates the content of the tableau.
+
+        Returns:
+        tuple: The content of the tableau as a tuple.
+        """
+        t = []
+        for i in range(self.max_P() + 1):
+            t.append(0)
+            for r in range(len(self)):
+                for c in range(len(self[r])):
+                    if self[r][c] == i:
+                        t[i] = t[i] + 1
+        t.sort(reverse=True) ## investigate this line -- why sort?
+        return tuple(t)
+
+    def locate(self, n):
+        """
+        Find the row and column (using zero-based indexing) of a number in a tableau.
+
+        Parameters
+        ----------
+        n : int
+            The number to find.
+
+        Returns
+        -------
+        tuple
+            The row and column of the number in the tableau, or None if the number is not found.
+        """
+        for i, row in enumerate(self):
+            if n in row:
+                return (i, row.index(n))
+        return None
+
+def partitions(n: int) -> List[List[int]]:
     """
     A simple generator of the list of integer partitions
 
@@ -19,7 +128,7 @@ def partitions(n):
     list of lists
         A list of partitions (as lists) in descending lexicographic order
     """
-    def generate_partitions(n, p):
+    def generate_partitions(n: int, p: List[int]) -> Union[List[List[int]], None]:
         if n == 0:
             yield p
         else:
@@ -28,7 +137,7 @@ def partitions(n):
 
     return [p[1:] for p in generate_partitions(n, [n])]
 
-def RSK(p):
+def RSK(p: List[int]) -> Tuple[Tableau, Tableau]:
     """Given a permutation p, spit out a pair of Young tableaux.
 
     Args:
@@ -37,10 +146,10 @@ def RSK(p):
     Returns:
         tuple: A pair of Young tableaux represented as two lists, P and Q.
     """
-    P = []
-    Q = []
+    P = Tableau([])
+    Q = Tableau([])
 
-    def insert(m, n=0):
+    def insert(m: int, n: int = 0) -> None:
         """
         Insert m into P, then place n in Q at the same place
 
@@ -63,38 +172,11 @@ def RSK(p):
 
     for i in range(len(p)):
         insert(int(p[i]), i + 1)
-    return (P, Q)
 
-def reading_word(P):
-    """
-    Flatten the nested list P and return a list of all the elements.
+    return P, Q
+     
 
-    Parameters:
-    P (list): A nested list representing partitions.
-
-    Returns:
-    list: A list containing all the elements from the nested list P.
-    """
-    return [item for sublist in P for item in sublist]
-
-def shape(P):
-    """
-    Returns the shape of a partition.
-
-    Parameters:
-    P (list): The partition.
-
-    Returns:
-    tuple: The shape of the partition, represented as a tuple of the lengths of each row.
-
-    Example:
-    >>> P = [[1, 2, 3], [4, 5], [6]]
-    >>> shape(P)
-    (3, 2, 1)
-    """
-    return tuple(len(P[r]) for r in range(len(P)))
-
-def K(n):
+def K(n: int) -> List[List[int]]:
     """
     Generate the Kostka matrix of the number of SSYT of content (rows) and
     shape (columns).  Rows and columns ordered in reverse lexicographic order.
@@ -105,7 +187,7 @@ def K(n):
 
     Returns
     -------
-    [numpy array]
+    List[List[int]]
         A square matrix with entries the number of SSYT 
     """    
     coefs = {}
@@ -116,92 +198,57 @@ def K(n):
         seq = [[i + 1] * p[i] for i in range(len(p))]
         seq = [i for sub in seq for i in sub]
         
-        q = []
-        """
-        this will die as n grows, but loop over perms of the content
-        run the RSK alg to get a SSYT and add one for each time the
-        standard reading word comes up
-        """
+        q = set()
         for perm in permutations(seq):
-            if perm not in q:
+            perm_tuple = tuple(perm)
+            if perm_tuple not in q:
                 P, Q = RSK(perm)
-                q.append(perm)
-                if reading_word(Q) == list(range(1, n + 1)):
-                    coefs[tuple(p)][shape(P)] += 1
+                q.add(perm_tuple)
+                if Q.reading_word() == list(range(1, n + 1)):
+                    coefs[tuple(p)][P.shape()] += 1
 
-    # turn the data into a martic
-    coefs = [coefs[p][i] for p in list(coefs) for i in list(coefs[p])]
-    coefs = np.array(coefs).reshape(len(inner), len(inner)).T
+    # turn the data into a matrix
+    coefs = [[coefs[p][i] for i in coefs[p]] for p in coefs]
+    coefs = [list(row) for row in zip(*coefs)]
     return coefs
 
-def intersection(lst1, lst2):
+def intersection(lst1: List[int], lst2: List[int]) -> List[int]:
     return list(set(lst1) & set(lst2))
 
-
-def max_P(P):
-    return max(max(P[r]) for r in range(len(P)))
-
-
-def min_P(P):
-    return min(min(P[r]) for r in range(len(P)))
-
-
-def content(P):
+def h_gen(n: int) -> List[List[int]]:
     """
-    Calculates the content of a partition.
+    Generate all possible monotone integer sequences of length n such that
+    i <= h(i) <= n.
 
-    Parameters:
-    P (list): The partition represented as a list of lists.
+    Args:
+        n (int): The positive integer.
 
     Returns:
-    tuple: The content of the partition as a tuple.
+        List[List[int]]: A list of lists representing the partitions of n.
+
+    Example:
+        >>> h_gen(3)
+        [[1, 2, 3], [1, 3, 3], [2, 2, 3], [2, 3, 3], [3, 3, 3]]
     """
-    t = []
-    for i in range(max_P(P) + 1):
-        t.append(0)
-        for r in range(len(P)):
-            for c in range(len(P[r])):
-                if P[r][c] == i:
-                    t[i] = t[i] + 1
-    t.sort(reverse=True)
-    return tuple(t)
-
-
-def h_gen(n):
     hh = [[i for i in range(1, n + 1)]]
-    j = 0
-    h = hh[0]
-    while h != [n for i in range(n)]:
-        for i in range(n - 1):
-            if h[i] < h[i + 1]:
-                h_new = h.copy()
-                h_new[i] = h[i] + 1
-                if h_new not in hh:
-                    hh.append(h_new)
-        j = j + 1
-        h = hh[j]
-    return hh
+    hh_set = {tuple(h) for h in hh}
+    target = [n] * n
 
+    for h in hh:
+        if h != target:
+            for i in range(n - 1):
+                if h[i] < h[i + 1]:
+                    h_new = h.copy()
+                    h_new[i] += 1
+                    h_new_tuple = tuple(h_new)
+                    if h_new_tuple not in hh_set:
+                        hh.append(h_new)
+                        hh_set.add(h_new_tuple)
+    return sorted(hh)
 
-def incomparable(i, h):
+def h_banded_function(i: int, n: int) -> List[int]:
     """
-    Returns a list of numbers that are incomparable to the given number 'i' in the list 'h'.
-
-    Parameters:
-    i (int): The number to compare against.
-    h (list): The list of numbers.
-
-    Returns:
-    list: A list of numbers that are incomparable to 'i' in 'h'.
-    """
-    top = h[i - 1]
-    bottom = min([j + 1 for j in range(len(h)) if h[j] >= i])
-    return list(range(bottom, top + 1))
-
-
-def h_banded_function(i, n):
-    """
-    A quick tool to get the banded h_functions
+    A quick tool to get the banded h_functions, i.e h(j) = min(i + j, n)
 
     Parameters
     ----------
@@ -217,27 +264,77 @@ def h_banded_function(i, n):
     """
     return [min(j + i, n) for j in range(n)]
 
+from typing import List
 
-def transpose(P):
+def comparable(i: int, h: List[int]) -> List[int]:
     """
-    Returns the transpose of a tableau
+    Returns a list of integers greater than h[i] from the given list h.
+
+    Args:
+        i (int): The index of the element in h.
+        h (List[int]): The list of integers.
+
+    Returns:
+        List[int]: A list of integers greater than h[i].
     """
-    PP = []
-    for i in range(len(P)):
-        for j in range(len(P[i])):
-            PP.append([j, P[i][j]])
+    return [j for j in range(i, len(h)+1) if h[i-1] < j]
 
-    n = max_P(P)
-    ind = [[k[1] for k in PP if k[0] == j] for j in range(n + 1)]
+def incomparable(i: int, h: List[int]) -> List[int]:
+    """
+    Returns a list of integers that are incomparable to the element at index i in the list h.
 
-    p = []
-    for i in range(len(ind)):
-        if len(ind[i]) != 0:
-            p.append(ind[i])
-    return p
+    Parameters:
+    i (int): The index of the element in h.
+    h (List[int]): The list of integers.
+
+    Returns:
+    List[int]: A list of integers that are incomparable to the element at index i in h.
+    """
+    return [j for j in range(i, len(h)+1) if h[i-1] >= j]
+
+def check_row(row: List[int], h: List[int]) -> bool:
+    # if [x,y] in row then y is not less than x
+    for i in range(len(row)-1):
+        if row[i] in comparable(row[i+1], h):
+            return False
+    return True
+
+def check_col(col: List[int], h: List[int]) -> bool:
+    for i in range(len(col)-1):
+        if col[i+1] not in comparable(col[i], h):
+            return False
+    return True
+
+def gasharov(p: List[int], h: List[int]) -> List[Tableau]:
+    """
+    Generate Gasharov tableaux given a partition and a Hessenberg function.
+
+    Parameters
+    ----------
+    p : list of int
+        A partition of n.
+    h : list of int
+        Hessenberg function.
+
+    Returns
+    -------
+    list of Tableau
+        List of Gasharov tableaux satisfying the given partition and Hessenberg function.
+    """
+    id = list(range(1, max(h)+1))
+    p_sum = list(accumulate([0] + p))
+    P = Tableau([[i for i in range(p_sum[j-1]+1, p_sum[j]+1)] for j in range(1,len(p)+1)])
+    G = []
+    for w in permutations(id):
+        Q = Tableau([[w[i-1] for i in row] for row in P])
+        if not any(not check_row(row, h) for row in Q):
+            if not any(not check_col(col, h) for col in Q.transpose()):
+                G.append((Q, P_inv(Q, h)))
+    return G
 
 
-def P_inv(P, h):
+
+def P_inv(P: Tableau, h: List[int]) -> int:
     """
     Returns the inversions of a tableau
 
@@ -246,26 +343,18 @@ def P_inv(P, h):
     P : list of lists
         The tableau represented as a list of lists.
     h : list
-        The list of hook lengths corresponding to the tableau.
+        A hessenberg function.
 
     Returns
     -------
     int
         The number of inversions in the tableau.
     """
-    inv = 0
-    n = max(reading_word(P))
-    columns = {
-        i: P[r].index(i)
-        for r in range(len(P))
-        for i in range(1, n + 1)
-        if i in P[r]
-    }
-    for i in range(1, n + 1):
-        m = min(n, max(incomparable(i, h)))
-        for j in range(i + 1, m + 1):
-            if j > n:
-                continue
-            if columns[i] > columns[j]:
-                inv += 1
-    return inv
+    inv = []
+    n = P.max_P()
+    columns = [row for row in P.transpose()]
+    return [
+        (i, j) for i in range(1, n)
+        for j in incomparable(i, h)
+        if P.locate(i)[1] > P.locate(j)[1]
+    ]
