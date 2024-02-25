@@ -1,5 +1,7 @@
 from bisect import bisect
-from perms import descents, desc
+
+from perms import desc, descents
+
 
 def find_valleys(p):
     """
@@ -13,6 +15,7 @@ def find_valleys(p):
 
     """
     return [i for i in range(1, len(p) - 1) if p[i - 1] > p[i] < p[i + 1]]
+
 
 def remover(pp):
     """
@@ -32,7 +35,7 @@ def remover(pp):
         return remover(pp[:-1])
     elif N > 0:
         return remover(pp[N:])
-    else: # the max is at the beginning
+    else:  # the max is at the beginning
         valleys = find_valleys(pp)  # find the valleys in the substring
         if len(valleys) == 0:  # return the substring if no valleys
             return pp
@@ -41,14 +44,14 @@ def remover(pp):
             des_v = descents(pp[v:])  # look at the descents after the first valley
             if des_v != []:  # if descents then recurse
                 return remover(pp[v:])
-            else: # check if the rest of permutation climbs above the descent before the valley
+            else:  # check if the rest of permutation climbs above the descent before the valley
                 climbs = [j for j in pp[v:] if (j > pp[v - 1])]
-                if climbs == []:                    
+                if climbs == []:
                     return pp
                 else:
                     j = min(climbs)
                     return [i for i in pp if (i < j)]
-            
+
 
 def remove(p, q):
     """
@@ -93,7 +96,7 @@ def descent_algo(p):
             - a (list): The resulting list after performing the descent algorithm.
             - deg (dict): A dictionary containing the degrees of each step in the algorithm.
     """
-    
+
     pp = list(p)
     i = 0
     a = [0 for _ in sorted(p)]
