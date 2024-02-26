@@ -4,6 +4,7 @@ from math import factorial
 from multiprocessing import Pool
 from typing import Any, List
 
+from jinja2 import Template
 import matplotlib.pyplot as plt
 import pandas as pd
 from descent import descent_algo
@@ -119,71 +120,79 @@ def save_mapping(df: pd.DataFrame, n: int) -> None:
 
     with open("../output/decent_map_{}.html".format(n), mode="r") as f:
         html = f.read()
-        html = HEAD + html + TAIL
+        columns = {
+          "Permutations": 0,
+          'Increasing_Codes': 4,
+          'Shape': 5,
+          'Indices': 2,
+          'Descents': 3,
+        }
+        html = html_head_tail(html, columns=columns)
 
     with open("../output/decent_map_{}.html".format(n), mode="w") as g:
         g.write(html)
 
+def html_head_tail(html: str, columns=None) -> str:
+    """
+    Add the head and tail to the HTML code.
 
-HEAD = """
-<html>
+    Args:
+      html: The HTML code to be modified.
 
-<head>
-  <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous">
-  </script>
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+    Returns:
+      The modified HTML code.
+    """
 
-  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
-  <script>
-  $(document).ready(function() {
-    var table = $('#table_id').DataTable(); // Initialize your DataTable
+    HEAD = """
+    <html>
 
-    // Add event listeners to the input boxes
-    $('input').on('keyup', function() {
-    var column = this.id;
-    var value = this.value;
+    <head>
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous">
+      </script>
+      <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
 
-    // Search the column for the exact match
-    table.column(column).search(value).draw();
-    });
-  });
-  </script>
-</head>
+      <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+      <script>
+      $(document).ready(function() {
+        var table = $('#table_id').DataTable(); // Initialize your DataTable
 
-<body>
-  <table class="inputs">
-  <tbody>
-    <tr>
-    <td>Permutations:</td>
-    <td><input type="text" id="0" name="perm"></td>
-    </tr>
-    <tr>
-    <td>Increasing Codes:</td>
-    <td><input type="text" id="4" name="code"></td>
-    </tr>
-    <tr>
-    <td>Shape:</td>
-    <td><input type="text" id="5" name="shape"></td>
-    </tr>
-    <tr>
-    <td>Indices:</td>
-    <td><input type="text" id="2" name="index"></td>
-    </tr>
-    <tr>
-    <td>Descents:</td>
-    <td><input type="text" id="3" name="descent"></td>
-    </tr>
-  </tbody>
-  </table>
-"""
+        // Add event listeners to the input boxes
+        $('input').on('keyup', function() {
+        var column = this.id;
+        var value = this.value;
 
-TAIL = """
-</body>
+        // Search the column for the exact match
+        table.column(column).search(value).draw();
+        });
+      });
+      </script>
+    </head>
 
-</html>"""
+    <body>
+      {% if columns %}
+        {% for key, value in columns.items() %}
+          <table class="inputs">
+          <tbody>
+            <tr>
+            <td>{{key}}:</td>
+            <td><input type="text" id="{{value}}" name="{{ key | lower }}"></td>
+            </tr>
+          </tbody>
+          </table>
+        {% endfor %}
+      {% endif %}
+    """
+
+    TAIL = """
+    </body>
+
+    </html>"""
+    
+    return Template(HEAD + html + TAIL).render(columns=columns)
 
 if __name__ == "__main__":
-    for n in range(2, 6):
+
+    for n in range(2, 8):
         t = time.time()
         id = range(1, n + 1)
         with Pool() as p:
