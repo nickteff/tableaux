@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from descent import descent_algo
 from perms import desc
+from partitions import h_gen, h_inv
 
 
 def code_shape(c: List[int]) -> List[int]:
@@ -132,17 +133,48 @@ def save_mapping(df: pd.DataFrame, n: int) -> None:
     with open("../output/decent_map_{}.html".format(n), mode="w") as g:
         g.write(html)
 
-def html_head_tail(html: str, columns=None) -> str:
+def save_inversions(df: pd.DataFrame, h_funcs: List) -> None:
+    df.perm = df.perm.apply(str)
+    tt = pd.DataFrame([str(p) for p in permutations(id)], columns=['perm'])
+    for h in h_funcs: 
+        tt = tt.assign(**{str(h): tt.perm.map(lambda p: h_inv(h, de_stringer(p)))})
+    tt = tt.merge(df.loc[:, ['perm', 'code', 'index', 'descents', 'increasing_code', 'shape']], on='perm')
+    tt.to_csv('../output/h_map_{}.csv'.format(n), index=False)
+    tt = tt.assign(plot=tt.perm.apply(de_stringer).apply(mapping))
+    tt.to_html(
+        '../output/h_map_{}.html'.format(n), 
+        escape=False, 
+        index=False, 
+        table_id="table_id")
+
+  
+
+    with open(f'../output/h_map_{n}.html', mode="r") as f:
+        html = f.read()
+        columns = {
+          "Permutations": tt.columns.get_loc('perm'),
+          'Increasing_Codes': tt.columns.get_loc('increasing_code'),
+          'Shape': tt.columns.get_loc('shape'),
+          'Indices': tt.columns.get_loc('index'),
+          'Descents': tt.columns.get_loc('descents'),
+        }
+        html = html_head_tail(html, columns=columns)
+
+    with open(f'../output/h_map_{n}.html', mode="w") as g:
+            g.write(html)
+
+def html_head_tail(html: str, columns: dict = None) -> str:
     """
     Add the head and tail to the HTML code.
 
     Args:
-      html: The HTML code to be modified.
+      html (str): The HTML code to be modified.
+      columns (dict, optional): A dictionary containing the column names and their corresponding values. Defaults to None.
 
     Returns:
-      The modified HTML code.
+      str: The modified HTML code.
     """
-
+    
     HEAD = """
     <html>
 
@@ -204,6 +236,8 @@ if __name__ == "__main__":
                 shape=df.code.apply(de_stringer).apply(code_shape),
             )
             save_mapping(df, n)
+            h_funcs = h_gen(n)
+            save_inversions(df, h_funcs)
         print(
             n,
             df.loc[:, ["code", "index"]].drop_duplicates().shape[0],

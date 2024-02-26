@@ -1,5 +1,5 @@
 from bisect import bisect
-from itertools import accumulate, permutations, zip_longest
+from itertools import accumulate, combinations, permutations, zip_longest
 from typing import List, Optional, Tuple, Union
 
 
@@ -237,10 +237,6 @@ def K(n: int) -> List[List[int]]:
     return coefs
 
 
-def intersection(lst1: List[int], lst2: List[int]) -> List[int]:
-    return list(set(lst1) & set(lst2))
-
-
 def h_gen(n: int) -> List[List[int]]:
     """
     Generate all possible monotone integer sequences of length n such that
@@ -291,6 +287,58 @@ def h_banded_function(i: int, n: int) -> List[int]:
     """
     return [min(j + i, n) for j in range(n)]
 
+
+def h_bands(n: int) -> List[List[int]]:
+    """
+    Generate all possible banded h-functions of length n.
+
+    Args:
+        n (int): The positive integer.
+
+    Returns:
+        List[List[int]]: A list of lists representing the banded h-functions of n.
+
+    Example:
+        >>> h_bands(3)
+        [[1, 2, 3], [2, 3, 3], [3, 3, 3]]
+    """
+    return [h_banded_function(i, n) for i in range(1, n)]
+
+
+def h_inversions(h: List[int], p: Optional[List[int]] = None) -> List[Tuple[int, int]]:
+    """
+    Returns a list of inversions in a given list 'h' or a list of inversions
+    in 'h' based on a permutation 'p'.
+
+    Parameters:
+    h (List[int]): The input list.
+    p (List[int], optional): The permutation list. Defaults to None.
+
+    Returns:
+    List[Tuple[int, int]]: A list of inversions.
+
+    """
+    n = len(h)
+    if not p:
+        return [(i, j) for i in range(1,n) for j in range(i + 1, n+1) if j <= h[i-1]]
+    else:
+        return [(i, j) for (i, j) in h_inversions(h) if p[i-1] > p[j-1]]
+
+
+def h_inv(h: List[int], p: List[int]) -> int:
+    """
+    Calculate the number of inversions in a given list 'h' with respect to a permutation 'p'.
+
+    Parameters:
+    h (list): The input list.
+    p (list): The permutation list.
+
+    Returns:
+    int: The number of inversions in 'h' with respect to 'p'.
+    """
+    return len(h_inversions(h, p))
+
+
 def comparable(i: int, h: List[int]) -> List[int]:
     """
     Returns a list of integers greater than h[i] from the given list h.
@@ -320,7 +368,16 @@ def incomparable(i: int, h: List[int]) -> List[int]:
 
 
 def check_row(row: List[int], h: List[int]) -> bool:
-    # if [x,y] in row then y is not less than x
+    """
+    Check if the elements in the given row satisfy the comparison condition.
+
+    Args:
+        row (List[int]): The row to be checked.
+        h (List[int]): The list of elements to compare against.
+
+    Returns:
+        bool: True if the comparison condition is satisfied, False otherwise.
+    """
     for i in range(len(row) - 1):
         if row[i] in comparable(row[i + 1], h):
             return False
@@ -328,6 +385,16 @@ def check_row(row: List[int], h: List[int]) -> bool:
 
 
 def check_col(col: List[int], h: List[int]) -> bool:
+    """
+    Check if the elements in the given column are comparable to the corresponding elements in the given list.
+
+    Args:
+        col (List[int]): The column to check.
+        h (List[int]): The list of elements to compare against.
+
+    Returns:
+        bool: True if all elements in the column are comparable, False otherwise.
+    """
     for i in range(len(col) - 1):
         if col[i + 1] not in comparable(col[i], h):
             return False
@@ -383,9 +450,7 @@ def P_inv(P: Tableau, h: List[int]) -> int:
     int
         The number of inversions in the tableau.
     """
-    inv = []
     n = P.max_P()
-    columns = [row for row in P.transpose()]
     return [
         (i, j)
         for i in range(1, n)
