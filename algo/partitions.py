@@ -285,7 +285,7 @@ def h_banded_function(i: int, n: int) -> List[int]:
     list
         The banded function as a list of integers.
     """
-    return [min(j + i, n) for j in range(n)]
+    return [min(j + i, n) for j in range(n+1)]
 
 
 def h_bands(n: int) -> List[List[int]]:
@@ -302,7 +302,7 @@ def h_bands(n: int) -> List[List[int]]:
         >>> h_bands(3)
         [[1, 2, 3], [2, 3, 3], [3, 3, 3]]
     """
-    return [h_banded_function(i, n) for i in range(1, n)]
+    return [h_banded_function(i, n) for i in range(1, n+1)]
 
 
 def h_inversions(h: List[int], p: Optional[List[int]] = None) -> List[Tuple[int, int]]:

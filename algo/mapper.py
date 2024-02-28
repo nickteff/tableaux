@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from descent import descent_algo
 from perms import desc
-from partitions import h_gen, h_inv
+from partitions import h_gen, h_inv, h_bands
 
 
 def code_shape(c: List[int]) -> List[int]:
@@ -236,7 +236,7 @@ if __name__ == "__main__":
                 shape=df.code.apply(de_stringer).apply(code_shape),
             )
             save_mapping(df, n)
-            h_funcs = h_gen(n)
+            h_funcs = h_bands(n)
             save_inversions(df, h_funcs)
         print(
             n,

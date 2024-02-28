@@ -33,4 +33,10 @@ For n = 5 d = 6 then the set $\{(15432), (25431), (43215), (53214), [(51432) or 
 
 Added a `docs` directory to keep my notes here
 
+## 2024-02-28
 
+A little more clean up of the docs and merged into main.
+
+Looking at just the banded type and looking for examples of $M^[n-1, 1]$, developing this thought around looking at `blocks`, `connections` in the permutation patterns.  Right now if I look at the longest `h-descent` root, inversion (in the banded type it a unique answer) you can begin to group the numbers together by those that are reached by the descent or something.  
+
+I may need to build the web app in order to look at $n > 7$...
