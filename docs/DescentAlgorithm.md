@@ -1,7 +1,7 @@
 
 ### Descent Algo
 
-Here is the code for the descent algorithm.  I have a description of the algorithm as explained by GitHub Copilot.  The key step is a function to remove certain elements from the permutation, called [[Descent Algorithm#Remover|remover]].
+Here is the code for the descent algorithm.  I have a description of the algorithm as explained by GitHub Copilot.  The key step is a function to remove certain elements from the permutation, called [remover](/docs/DescentAlgorithm.md#remover).
 
 ```python
 def descent_algo(p):

@@ -11,4 +11,8 @@ some exploration with tableaux
 5. `python -m mapper`
 
 This is run and populate output for `n = 2, 3, 4, 5, 6, 7` of the descent algorithm.  
-The output html files are found in the output directory.   
+The output html files are found in the output directory.
+
+## docs
+
+for a work in progress overview of what this is intending to investigate feel free to start [here](/docs/Tableaux.md)

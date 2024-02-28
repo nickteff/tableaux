@@ -31,4 +31,6 @@ Continued looking at the highest root repn.  A vague idea around looking at the 
 $w \in \{ (1, 4, 3, 2), (2, 4, 3, 1), (3, 2, 1, 4), (4,2, 1, 3)\}$ to be in an orbit.  While for example w = (3, 4, 1, 2) is fixed because 3 > 1, 4 > 2, but 4 > 1, so they are connected.  While a connection cannot be made in the set identified...  still vague.  e.g  1, 2, 4, 3 are all left out.  
 For n = 5 d = 6 then the set $\{(15432), (25431), (43215), (53214), [(51432) or (35241)]\}$ is an orbit and 1, 2, 5, 4, (5 or 3).  I like the second because of the identifcation of 1,2,3,4,5, but...
 
+Added a `docs` directory to keep my notes here
+
 

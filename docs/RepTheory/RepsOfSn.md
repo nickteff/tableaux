@@ -2,9 +2,6 @@
 
 - [x] #task grab info from my thesis on this ✅ 2024-02-22
 
-%% #-🪴weedy %%
-parent:: [[Fleeting MOC]]
-
 This section describes the representation theory of the symmetric group. We assume the basics of finite group representation theory, as found in for instance the beginning of Sagan’s book [24, Chapter 1]. We only work over the complex numbers. In this case the representation theory of the symmetric group is split-semisimple. 
 
 In addition, we sometimes refer to a representation as, equivalently, a module of the group algebra CSn [24, Definition 1.3.1]. The representation theory of the symmetric group is best described using the language of integer partitions. 
