@@ -18,6 +18,18 @@
 > Is there a version of the descent algorithm that removes by position instead of numbers?  
 > Try looking at the sequence function and what if recording the increment at the values removed, but rather it is the positions that should be removed?
 
+> [!NOTE] #question
+>
+> Investigate surjectivity, or the back map of the descent algorithm.  Preliminary thoughts point to needing to understand:
+> * what is the deal with climbs?
+> * Is there some sort of statement on sequences of length k and d descents and uniqueness?
+> 
+> e.g. [1, 1, 0, 1, 1] deg = 2 is this unique?
+
+> [!NOTE] #todo
+>
+> Write down the details of Brosan Chow and Tymoczko paving paper to understand the combinatorial details.
+ 
 #### Investigated
 
 > [!NOTE] #question 
