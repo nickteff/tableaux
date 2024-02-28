@@ -40,3 +40,5 @@ A little more clean up of the docs and merged into main.
 Looking at just the banded type and looking for examples of $M^{[n-1, 1]}$, developing this thought around looking at `blocks`, `connections` in the permutation patterns.  Right now if I look at the longest `h-descent` root, inversion (in the banded type it a unique answer) you can begin to group the numbers together by those that are reached by the descent or something.  
 
 I may need to build the web app in order to look at $n > 7$...
+
+Looking further into the Brosan-Chow paper along with JT's Linear Conditions paper.  Theorem 127 and Eqn 128 are the main result.  I still need to more carefully understand how JT's tableaux and the Brosan-Chow result combine.  It seems there is a connection to be made back to Gasharov tableaux.
