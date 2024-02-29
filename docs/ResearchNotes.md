@@ -73,9 +73,63 @@ First stab:
 ```python
 def gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
     counts = count_gasharov_tableaux(n, h)
-    df = pd.DataFrame(counts).T
-    #df.index.name = "Degree"
+	c = 
+    df = pd.DataFrame(
+		data=[[counts[d][p] for p in counts[0]] for d in counts],
+		columns=([str(t) for t in partitions(max(h))])
+	)
+    df.index.name = "Degree"
     #df.columns.name = "Shape"
     return df.fillna(0).astype(int)
 ```
 This needs some work -- 
+
+Ok, I have these functions running
+
+```python
+def count_gasharov_tableaux(n: int, h: List[int]) -> Dict[int, Dict[Tuple[int, ...], int]]:
+    """
+    Counts the number of Gasharov tableaux for each partition and possible degree for a given h.
+
+    Parameters
+    ----------
+    n : int
+        The number of elements in the partition.
+    h : list
+        A hessenberg function.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the counts of Gasharov tableaux for each degree and partition.
+    """
+    counts = {
+        d: {
+            tuple(p): 0 for p in partitions(n)
+           } for d in range(0, h_inv(h) + 1)}
+    for partition in partitions(n):
+        tableaux = gasharov(partition, h)
+        for t in tableaux:
+            counts[len(t[1])][tuple(t[0].shape())] += 1
+    return counts
+
+def gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
+    counts = count_gasharov_tableaux(n, h)
+    df = pd.DataFrame(
+		data=[[counts[d][p] for p in counts[0]] for d in counts],
+		columns=([str(t) for t in partitions(max(h))])
+    )
+    return df
+
+def perm_gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
+    df = gasharov_df(n, h)
+    K = Kn_inv(n)
+    return pd.DataFrame(df.dot(K.T), columns = df.columns)
+
+def conjecture_checker(n, h_func):
+    for h in h_func(n):
+        if sum(sum(perm_gasharov_df(n, h).values)) > 0:
+            return n, h
+    return f"For {n}, the conjecture is true for all {h_func.__name__}."
+```
+I also added all of the columns in the search function in `h_maps`

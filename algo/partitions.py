@@ -516,7 +516,19 @@ def count_gasharov_tableaux(n: int, h: List[int]) -> Dict[int, Dict[Tuple[int, .
 
 def gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
     counts = count_gasharov_tableaux(n, h)
-    df = pd.DataFrame(counts).T
-    #df.index.name = "Degree"
-    #df.columns.name = "Shape"
-    return df.fillna(0).astype(int)
+    df = pd.DataFrame(
+		data=[[counts[d][p] for p in counts[0]] for d in counts],
+		columns=([str(t) for t in partitions(max(h))])
+    )
+    return df
+
+def perm_gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
+    df = gasharov_df(n, h)
+    K = Kn_inv(n)
+    return pd.DataFrame(df.dot(K.T), columns = df.columns)
+
+def conjecture_checker(n, h_func):
+    for h in h_func(n):
+        if sum(sum(perm_gasharov_df(n, h).values)) > 0:
+            return n, h
+    return f"For {n}, the conjecture is true for all {h_func.__name__}."

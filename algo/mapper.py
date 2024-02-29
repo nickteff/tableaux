@@ -152,12 +152,7 @@ def save_inversions(df: pd.DataFrame, h_funcs: List) -> None:
     with open(f'../output/h_map_{n}.html', mode="r") as f:
         html = f.read()
         columns = {
-          "Permutations": tt.columns.get_loc('perm'),
-          'Increasing_Codes': tt.columns.get_loc('increasing_code'),
-          'Shape': tt.columns.get_loc('shape'),
-          'Indices': tt.columns.get_loc('index'),
-          'Descents': tt.columns.get_loc('descents'),
-        }
+          col.capitalize(): tt.columns.get_loc(col) for col in tt.columns }
         html = html_head_tail(html, columns=columns)
 
     with open(f'../output/h_map_{n}.html', mode="w") as g:
