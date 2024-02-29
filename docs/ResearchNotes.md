@@ -67,4 +67,15 @@ def count_gasharov_tableaux(n, h):
                 counts[key] = 1
     return counts
 ```
-These are working now.
+These are working now.  Now I want to create dataframes in order to calculate the reprs.  
+
+First stab:
+```python
+def gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
+    counts = count_gasharov_tableaux(n, h)
+    df = pd.DataFrame(counts).T
+    #df.index.name = "Degree"
+    #df.columns.name = "Shape"
+    return df.fillna(0).astype(int)
+```
+This needs some work -- 

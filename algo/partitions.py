@@ -1,6 +1,10 @@
 from bisect import bisect
 from itertools import accumulate, combinations, permutations, zip_longest
-from typing import List, Optional, Tuple, Union
+from typing import List, Dict, Optional, Tuple, Union
+
+
+import numpy as np
+import pandas as pd
 
 
 class Tableau(list):
@@ -236,6 +240,31 @@ def K(n: int) -> List[List[int]]:
     coefs = [list(row) for row in zip(*coefs)]
     return coefs
 
+def Kn(n: int) -> np.ndarray:
+    """
+    Generate the Kostka matrix of the number of SSYT of content (rows) and
+    shape (columns). Rows and columns ordered in reverse lexicographic order.
+
+    Parameters:
+    n (int): The size of the matrix (or size of integer partitions).
+
+    Returns:
+    np.ndarray: A square matrix with entries representing the number of SSYT.
+    """
+    return np.array(K(n))
+
+def Kn_inv(n: int) -> np.ndarray:
+    """
+    Calculate the inverse matrix of Kn(n).
+
+    Parameters:
+    n (int): The size of the matrix (or size of integer partitions).
+
+    Returns:
+    np.ndarray: The inverse matrix of Kn(n).
+    """
+    return np.linalg.inv(Kn(n))
+
 
 def h_gen(n: int) -> List[List[int]]:
     """
@@ -325,18 +354,19 @@ def h_inversions(h: List[int], p: Optional[List[int]] = None) -> List[Tuple[int,
         return [(i, j) for (i, j) in h_inversions(h) if p[i-1] > p[j-1]]
 
 
-def h_inv(h: List[int], p: List[int]) -> int:
+def h_inv(h: List[int], p: Optional[List[int]] = None) -> int:
     """
     Calculate the number of inversions in a given list 'h' with respect to a permutation 'p'.
 
     Parameters:
-    h (list): The input list.
-    p (list): The permutation list.
+    h (List[int]): The input list.
+    p (List[int], optional): The permutation list. Defaults to None.
 
     Returns:
     int: The number of inversions in 'h' with respect to 'p'.
     """
     return len(h_inversions(h, p))
+    
 
 
 def comparable(i: int, h: List[int]) -> List[int]:
@@ -458,15 +488,35 @@ def P_inv(P: Tableau, h: List[int]) -> int:
         if P.locate(i)[1] > P.locate(j)[1]
     ]
 
-def count_gasharov_tableaux(n, h):
-    counts = {}
+def count_gasharov_tableaux(n: int, h: List[int]) -> Dict[int, Dict[Tuple[int, ...], int]]:
+    """
+    Counts the number of Gasharov tableaux for each partition and possible degree for a given h.
+
+    Parameters
+    ----------
+    n : int
+        The number of elements in the partition.
+    h : list
+        A hessenberg function.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the counts of Gasharov tableaux for each degree and partition.
+    """
+    counts = {
+        d: {
+            tuple(p): 0 for p in partitions(n)
+           } for d in range(0, h_inv(h) + 1)}
     for partition in partitions(n):
         tableaux = gasharov(partition, h)
         for t in tableaux:
-            degree = len(t[1])
-            key = (tuple(partition), degree)
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
+            counts[len(t[1])][tuple(t[0].shape())] += 1
     return counts
+
+def gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
+    counts = count_gasharov_tableaux(n, h)
+    df = pd.DataFrame(counts).T
+    #df.index.name = "Degree"
+    #df.columns.name = "Shape"
+    return df.fillna(0).astype(int)
