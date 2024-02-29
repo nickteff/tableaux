@@ -18,14 +18,6 @@
 > Is there a version of the descent algorithm that removes by position instead of numbers?  
 > Try looking at the sequence function and what if recording the increment at the values removed, but rather it is the positions that should be removed?
 
-> [!NOTE] #question
->
-> Investigate surjectivity, or the back map of the descent algorithm.  Preliminary thoughts point to needing to understand:
-> * what is the deal with climbs?
-> * Is there some sort of statement on sequences of length k and d descents and uniqueness?
-> 
-> e.g. [1, 1, 0, 1, 1] deg = 2 is this unique?
-
 > [!NOTE] #todo
 >
 > Write down the details of Brosan Chow and Tymoczko paving paper to understand the combinatorial details.
@@ -37,6 +29,15 @@
 >
 >  I looked into this and we run into issues looking backward from the last valley.  e.g. [5, 4, 3, 1, 2] or just [4, 3, 1, 2] the algorithm would not include the `5` in the former and `4` in the latter.   
 
+> [!NOTE] #question
+>
+> Investigate surjectivity, or the back map of the descent algorithm.  Preliminary thoughts point to needing to understand:
+> * what is the deal with climbs?
+> * Is there some sort of statement on sequences of length k and d descents and uniqueness?
+> 
+> e.g. [1, 1, 0, 1, 1] deg = 2 is this unique?
+> 
+>I have looked at the uniqueness in some ways it is contingent on how precisely we start.  We can make a statment about it when the largest number N is required to begin or end the sequence.  If there is a statement that there is at most 1 valley -- and when no valleys then it is either the decreasing or increasing sequence.  The latter being the unique one with no descents -- to say this claim we need to know about climbs, because otherwise we can end with N more readily.  If no climbs, then there is a recursive/inductive argument at our disposal. 
 
 
 
