@@ -52,16 +52,14 @@ import numpy as np
 def Kn(n): return np.array(K(n))
 def Kn_inv(n): return np.linalg.inv(Kn(n))
 ```
-This is Copilots first attempt -- needs some work -- the P_inv function returns a list of tuples, so needs a fix
-```python
-from algo.partitions import partitions, gasharov, P_inv
 
+```python
 def count_gasharov_tableaux(n, h):
     counts = {}
     for partition in partitions(n):
         tableaux = gasharov(partition, h)
-        for tableau in tableaux:
-            degree = P_inv(tableau)
+        for t in tableaux:
+            degree = len(t[1])
             key = (tuple(partition), degree)
             if key in counts:
                 counts[key] += 1
@@ -69,3 +67,4 @@ def count_gasharov_tableaux(n, h):
                 counts[key] = 1
     return counts
 ```
+These are working now.

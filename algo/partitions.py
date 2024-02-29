@@ -457,3 +457,16 @@ def P_inv(P: Tableau, h: List[int]) -> int:
         for j in incomparable(i, h)
         if P.locate(i)[1] > P.locate(j)[1]
     ]
+
+def count_gasharov_tableaux(n, h):
+    counts = {}
+    for partition in partitions(n):
+        tableaux = gasharov(partition, h)
+        for t in tableaux:
+            degree = len(t[1])
+            key = (tuple(partition), degree)
+            if key in counts:
+                counts[key] += 1
+            else:
+                counts[key] = 1
+    return counts
