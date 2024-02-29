@@ -42,3 +42,30 @@ Looking at just the banded type and looking for examples of $M^{[n-1, 1]}$, deve
 I may need to build the web app in order to look at $n > 7$...
 
 Looking further into the Brosan-Chow paper along with JT's Linear Conditions paper.  Theorem 127 and Eqn 128 are the main result.  I still need to more carefully understand how JT's tableaux and the Brosan-Chow result combine.  It seems there is a connection to be made back to Gasharov tableaux.
+
+## 2024-02-29
+
+I determined I need a way to filter the `h_map` files by h_function and degree and I want a function that will generate the q_polys in the `S` and `M` representation bases, so I will also want a function that generates a vector of `S` by (partition, degree, count) and a function the calculates the inverse Kostka matrix (I know! an inverse)
+
+```python
+import numpy as np
+def Kn(n): return np.array(K(n))
+def Kn_inv(n): return np.linalg.inv(Kn(n))
+```
+This is Copilots first attempt -- needs some work -- the P_inv function returns a list of tuples, so needs a fix
+```python
+from algo.partitions import generate_partitions, gasharov, P_inv
+
+def count_gasharov_tableaux(n, h):
+    counts = {}
+    for partition in generate_partitions(n):
+        tableaux = gasharov(partition, h)
+        for tableau in tableaux:
+            degree = P_inv(tableau)
+            key = (tuple(partition), degree)
+            if key in counts:
+                counts[key] += 1
+            else:
+                counts[key] = 1
+    return counts
+```
