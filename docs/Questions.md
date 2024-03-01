@@ -21,6 +21,10 @@
 > [!NOTE] #todo
 >
 > Write down the details of Brosan Chow and Tymoczko paving paper to understand the combinatorial details.
+
+> [!NOTE] #question
+>
+> Is it possible to do some manipulatorics with Forbenius reciprocity, Peri Rules, upper triangularity and the Gasharov tableaux to glean any insights?
  
 #### Investigated
 

@@ -139,3 +139,17 @@ I also added all of the columns in the search function in `h_maps`
 Wrote a function that creates the polynomial for the expansion in terms of the homogeneous symmetric function of the Frobenius characteristic of the representation.  I have checked that for banded h function the conjecture holds to n = 10.  
 
 Also, wow, it was hard fighting with the `sympy.symbols` the parser there had some assumptions backed in to make variable generation easy and it was not working with how we are expressing partitions.  It clashed there, so some code gymnastics were needed that took a lot of time.
+
+Looking at `[3, 4, 5, 5, 5]` and in degree `3` and shape `[3, 2]` these permutations looks to be a candidate group 
+```
+[1, 3, 5, 4, 2] 
+[2, 3, 5, 4, 1] 
+[2, 4, 1, 5, 3] 
+[2, 4, 3, 1, 5] 
+[3, 1, 4, 5, 2] 
+[3, 1, 5, 2, 4]
+[3, 2, 4, 5, 1] 
+[3, 4, 1, 5, 2]
+[4, 1, 2, 5, 3] 
+[4, 1, 5, 2, 3] 
+```
