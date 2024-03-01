@@ -1,14 +1,14 @@
-from sympy import symbols, expand, cancel
+from sympy import cancel, expand, symbols
 
 
 def q_poly(q, n):
     if type(q) == str:
         q = symbols(q)
-        return expand(cancel((1 - q ** n) / (1 - q)))
+        return expand(cancel((1 - q**n) / (1 - q)))
     elif q == 1:
         return n
     else:
-        return expand(cancel((1 - q ** n) / (1 - q)))
+        return expand(cancel((1 - q**n) / (1 - q)))
 
 
 def q_fact(q, n):

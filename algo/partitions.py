@@ -1,10 +1,11 @@
 from bisect import bisect
+from collections import defaultdict
 from itertools import accumulate, permutations, zip_longest
-from typing import List, Dict, Optional, Tuple, Union
-
+from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
+from sympy import collect, symbols
 
 
 class Tableau(list):
@@ -68,7 +69,7 @@ class Tableau(list):
         >>> P.shape()
         (3, 2, 1)
         """
-        return tuple(len(self[r]) for r in range(len(self)))
+        return [len(self[r]) for r in range(len(self))]
 
     def max_P(self) -> int:
         """
@@ -219,9 +220,9 @@ def K(n: int) -> List[List[int]]:
         A square matrix with entries the number of SSYT
     """
     coefs = {}
-    inner = {tuple(q): 0 for q in partitions(n)}
+    inner = {str(q): 0 for q in partitions(n)}
     for p in partitions(n):
-        coefs[tuple(p)] = inner.copy()
+        coefs[str(p)] = inner.copy()
         # create a list of p_1 1's, p_2 2's, etc...
         seq = [[i + 1] * p[i] for i in range(len(p))]
         seq = [i for sub in seq for i in sub]
@@ -233,12 +234,13 @@ def K(n: int) -> List[List[int]]:
                 P, Q = RSK(perm)
                 q.add(perm_tuple)
                 if Q.reading_word() == list(range(1, n + 1)):
-                    coefs[tuple(p)][P.shape()] += 1
+                    coefs[str(p)][str(P.shape())] += 1
 
     # turn the data into a matrix
     coefs = [[coefs[p][i] for i in coefs[p]] for p in coefs]
     coefs = [list(row) for row in zip(*coefs)]
     return coefs
+
 
 def Kn(n: int) -> np.ndarray:
     """
@@ -252,6 +254,7 @@ def Kn(n: int) -> np.ndarray:
     np.ndarray: A square matrix with entries representing the number of SSYT.
     """
     return np.array(K(n))
+
 
 def Kn_inv(n: int) -> np.ndarray:
     """
@@ -314,7 +317,7 @@ def h_banded_function(i: int, n: int) -> List[int]:
     list
         The banded function as a list of integers.
     """
-    return [min(j + i, n) for j in range(n+1)]
+    return [min(j + i, n) for j in range(n + 1)]
 
 
 def h_bands(n: int) -> List[List[int]]:
@@ -331,7 +334,7 @@ def h_bands(n: int) -> List[List[int]]:
         >>> h_bands(3)
         [[1, 2, 3], [2, 3, 3], [3, 3, 3]]
     """
-    return [h_banded_function(i, n) for i in range(1, n+1)]
+    return [h_banded_function(i, n) for i in range(1, n + 1)]
 
 
 def h_inversions(h: List[int], p: Optional[List[int]] = None) -> List[Tuple[int, int]]:
@@ -349,9 +352,11 @@ def h_inversions(h: List[int], p: Optional[List[int]] = None) -> List[Tuple[int,
     """
     n = len(h)
     if not p:
-        return [(i, j) for i in range(1,n) for j in range(i + 1, n+1) if j <= h[i-1]]
+        return [
+            (i, j) for i in range(1, n) for j in range(i + 1, n + 1) if j <= h[i - 1]
+        ]
     else:
-        return [(i, j) for (i, j) in h_inversions(h) if p[i-1] > p[j-1]]
+        return [(i, j) for (i, j) in h_inversions(h) if p[i - 1] > p[j - 1]]
 
 
 def h_inv(h: List[int], p: Optional[List[int]] = None) -> int:
@@ -366,7 +371,6 @@ def h_inv(h: List[int], p: Optional[List[int]] = None) -> int:
     int: The number of inversions in 'h' with respect to 'p'.
     """
     return len(h_inversions(h, p))
-    
 
 
 def comparable(i: int, h: List[int]) -> List[int]:
@@ -447,7 +451,7 @@ def gasharov(p: List[int], h: List[int]) -> List[Tableau]:
     list of Tableau
         List of Gasharov tableaux satisfying the given partition and Hessenberg function.
     """
-    id = list(range(1, max(h) + 1))
+    id = list(range(1, h[-1] + 1))
     p_sum = list(accumulate([0] + p))
     P = Tableau(
         [
@@ -488,14 +492,13 @@ def P_inv(P: Tableau, h: List[int]) -> int:
         if P.locate(i)[1] > P.locate(j)[1]
     ]
 
-def count_gasharov_tableaux(n: int, h: List[int]) -> Dict[int, Dict[Tuple[int, ...], int]]:
+
+def count_gasharov_tableaux(h: List[int]) -> Dict[int, Dict[Tuple[int, ...], int]]:
     """
     Counts the number of Gasharov tableaux for each partition and possible degree for a given h.
 
     Parameters
     ----------
-    n : int
-        The number of elements in the partition.
     h : list
         A hessenberg function.
 
@@ -504,21 +507,23 @@ def count_gasharov_tableaux(n: int, h: List[int]) -> Dict[int, Dict[Tuple[int, .
     dict
         A dictionary containing the counts of Gasharov tableaux for each degree and partition.
     """
-    counts = defaultdict(lambda: defaultdict(int))
+    n = h[-1]
+    counts = {d: {str(t): 0 for t in partitions(n)} for d in range(h_inv(h) + 1)}
     for partition in partitions(n):
         tableaux = gasharov(partition, h)
         for t in tableaux:
-            counts[len(t[1])][tuple(t[0].shape())] += 1
+            degree = len(t[1])
+            shape = str(t[0].shape())
+            counts[degree][shape] += 1
     return dict(counts)
 
-def gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
+
+def gasharov_df(h: List[int]) -> pd.DataFrame:
     """
     Generates a pandas DataFrame with the counts of Gasharov tableaux for each degree and partition.
 
     Parameters
     ----------
-    n : int
-        The number of elements in the partition.
     h : list
         A hessenberg function.
 
@@ -527,21 +532,20 @@ def gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
     pd.DataFrame
         The DataFrame containing the counts of Gasharov tableaux.
     """
-    counts = count_gasharov_tableaux(n, h)
+    counts = count_gasharov_tableaux(h)
     df = pd.DataFrame(
         data=[[counts[d][p] for p in counts[0]] for d in counts],
-        columns=([str(t) for t in partitions(max(h))])
+        columns=([str(t) for t in partitions(h[-1])]),
     )
-    return df
+    return df.fillna(0)
 
-def perm_gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
+
+def perm_gasharov_df(h: List[int]) -> pd.DataFrame:
     """
     Generates a pandas DataFrame with the counts of Gasharov tableaux multiplied by the inverse of Kn.
 
     Parameters
     ----------
-    n : int
-        The number of elements in the partition.
     h : list
         A hessenberg function.
 
@@ -550,9 +554,12 @@ def perm_gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
     pd.DataFrame
         The DataFrame containing the counts of Gasharov tableaux multiplied by the inverse of Kn.
     """
-    df = gasharov_df(n, h)
-    K = Kn_inv(n)
-    return pd.DataFrame(df.dot(K.T), columns=df.columns)
+    df = gasharov_df(h)
+    K = Kn_inv(h[-1])
+    out = pd.DataFrame(df.dot(K.T))
+    out.columns = df.columns
+    return out
+
 
 def conjecture_checker(n: int, h_func: callable) -> Union[Tuple[int, List[int]], str]:
     """
@@ -572,6 +579,24 @@ def conjecture_checker(n: int, h_func: callable) -> Union[Tuple[int, List[int]],
         If the conjecture is true for all hessenberg functions, returns a string.
     """
     for h in h_func(n):
-        if sum(sum(perm_gasharov_df(n, h).values)) > 0:
+        if sum(sum(perm_gasharov_df(h).values)) > 0:
             return n, h
     return f"For {n}, the conjecture is true for all {h_func.__name__}."
+
+
+def h_poly(h):
+    df = perm_gasharov_df(h)
+    # this is a little gross, but due to the way symbols works, we need to
+    variables = symbols(
+        [f"h_[{t}]" for t in [";".join(c[1:-1].split(", ")) for c in df.columns]]
+    )
+    q = symbols("q")
+    poly = 0
+
+    # Loop over the DataFrame
+    for i, row in df.iterrows():
+        for j, value in enumerate(row):
+            # Add the term to the polynomial
+            poly += int(value) * variables[j] * q**i
+
+    return collect(poly, variables)

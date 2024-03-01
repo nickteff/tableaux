@@ -4,12 +4,12 @@ from math import factorial
 from multiprocessing import Pool
 from typing import Any, List
 
-from jinja2 import Template
 import matplotlib.pyplot as plt
 import pandas as pd
 from descent import descent_algo
+from jinja2 import Template
+from partitions import h_bands, h_gen, h_inv
 from perms import desc
-from partitions import h_gen, h_inv, h_bands
 
 
 def code_shape(c: List[int]) -> List[int]:
@@ -122,41 +122,44 @@ def save_mapping(df: pd.DataFrame, n: int) -> None:
     with open("../output/decent_map_{}.html".format(n), mode="r") as f:
         html = f.read()
         columns = {
-          "Permutations": 0,
-          'Increasing_Codes': 4,
-          'Shape': 5,
-          'Indices': 2,
-          'Descents': 3,
+            "Permutations": 0,
+            "Increasing_Codes": 4,
+            "Shape": 5,
+            "Indices": 2,
+            "Descents": 3,
         }
         html = html_head_tail(html, columns=columns)
 
     with open("../output/decent_map_{}.html".format(n), mode="w") as g:
         g.write(html)
 
+
 def save_inversions(df: pd.DataFrame, h_funcs: List) -> None:
     df.perm = df.perm.apply(str)
-    tt = pd.DataFrame([str(p) for p in permutations(id)], columns=['perm'])
-    for h in h_funcs: 
+    tt = pd.DataFrame([str(p) for p in permutations(id)], columns=["perm"])
+    for h in h_funcs:
         tt = tt.assign(**{str(h): tt.perm.map(lambda p: h_inv(h, de_stringer(p)))})
-    tt = tt.merge(df.loc[:, ['perm', 'code', 'index', 'descents', 'increasing_code', 'shape']], on='perm')
-    tt.to_csv('../output/h_map_{}.csv'.format(n), index=False)
+    tt = tt.merge(
+        df.loc[:, ["perm", "code", "index", "descents", "increasing_code", "shape"]],
+        on="perm",
+    )
+    tt.to_csv("../output/h_map_{}.csv".format(n), index=False)
     tt = tt.assign(plot=tt.perm.apply(de_stringer).apply(mapping))
     tt.to_html(
-        '../output/h_map_{}.html'.format(n), 
-        escape=False, 
-        index=False, 
-        table_id="table_id")
+        "../output/h_map_{}.html".format(n),
+        escape=False,
+        index=False,
+        table_id="table_id",
+    )
 
-  
-
-    with open(f'../output/h_map_{n}.html', mode="r") as f:
+    with open(f"../output/h_map_{n}.html", mode="r") as f:
         html = f.read()
-        columns = {
-          col.capitalize(): tt.columns.get_loc(col) for col in tt.columns }
+        columns = {col.capitalize(): tt.columns.get_loc(col) for col in tt.columns}
         html = html_head_tail(html, columns=columns)
 
-    with open(f'../output/h_map_{n}.html', mode="w") as g:
-            g.write(html)
+    with open(f"../output/h_map_{n}.html", mode="w") as g:
+        g.write(html)
+
 
 def html_head_tail(html: str, columns: dict = None) -> str:
     """
@@ -169,7 +172,7 @@ def html_head_tail(html: str, columns: dict = None) -> str:
     Returns:
       str: The modified HTML code.
     """
-    
+
     HEAD = """
     <html>
 
@@ -214,11 +217,11 @@ def html_head_tail(html: str, columns: dict = None) -> str:
     </body>
 
     </html>"""
-    
+
     return Template(HEAD + html + TAIL).render(columns=columns)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     for n in range(2, 8):
         t = time.time()
         id = range(1, n + 1)

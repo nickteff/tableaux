@@ -133,3 +133,9 @@ def conjecture_checker(n, h_func):
     return f"For {n}, the conjecture is true for all {h_func.__name__}."
 ```
 I also added all of the columns in the search function in `h_maps`
+
+## 2024-03-01
+
+Wrote a function that creates the polynomial for the expansion in terms of the homogeneous symmetric function of the Frobenius characteristic of the representation.  I have checked that for banded h function the conjecture holds to n = 10.  
+
+Also, wow, it was hard fighting with the `sympy.symbols` the parser there had some assumptions backed in to make variable generation easy and it was not working with how we are expressing partitions.  It clashed there, so some code gymnastics were needed that took a lot of time.
