@@ -1,5 +1,5 @@
 from bisect import bisect
-from itertools import accumulate, combinations, permutations, zip_longest
+from itertools import accumulate, permutations, zip_longest
 from typing import List, Dict, Optional, Tuple, Union
 
 
@@ -504,30 +504,73 @@ def count_gasharov_tableaux(n: int, h: List[int]) -> Dict[int, Dict[Tuple[int, .
     dict
         A dictionary containing the counts of Gasharov tableaux for each degree and partition.
     """
-    counts = {
-        d: {
-            tuple(p): 0 for p in partitions(n)
-           } for d in range(0, h_inv(h) + 1)}
+    counts = defaultdict(lambda: defaultdict(int))
     for partition in partitions(n):
         tableaux = gasharov(partition, h)
         for t in tableaux:
             counts[len(t[1])][tuple(t[0].shape())] += 1
-    return counts
+    return dict(counts)
 
 def gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
+    """
+    Generates a pandas DataFrame with the counts of Gasharov tableaux for each degree and partition.
+
+    Parameters
+    ----------
+    n : int
+        The number of elements in the partition.
+    h : list
+        A hessenberg function.
+
+    Returns
+    -------
+    pd.DataFrame
+        The DataFrame containing the counts of Gasharov tableaux.
+    """
     counts = count_gasharov_tableaux(n, h)
     df = pd.DataFrame(
-		data=[[counts[d][p] for p in counts[0]] for d in counts],
-		columns=([str(t) for t in partitions(max(h))])
+        data=[[counts[d][p] for p in counts[0]] for d in counts],
+        columns=([str(t) for t in partitions(max(h))])
     )
     return df
 
 def perm_gasharov_df(n: int, h: List[int]) -> pd.DataFrame:
+    """
+    Generates a pandas DataFrame with the counts of Gasharov tableaux multiplied by the inverse of Kn.
+
+    Parameters
+    ----------
+    n : int
+        The number of elements in the partition.
+    h : list
+        A hessenberg function.
+
+    Returns
+    -------
+    pd.DataFrame
+        The DataFrame containing the counts of Gasharov tableaux multiplied by the inverse of Kn.
+    """
     df = gasharov_df(n, h)
     K = Kn_inv(n)
-    return pd.DataFrame(df.dot(K.T), columns = df.columns)
+    return pd.DataFrame(df.dot(K.T), columns=df.columns)
 
-def conjecture_checker(n, h_func):
+def conjecture_checker(n: int, h_func: callable) -> Union[Tuple[int, List[int]], str]:
+    """
+    Checks the conjecture for a given n and a callable function for a list hessenberg functions.
+
+    Parameters
+    ----------
+    n : int
+        The number of elements in the partition.
+    h_func : callable
+        A function that returns a list of hessenberg functions.
+
+    Returns
+    -------
+    Union[Tuple[int, List[int]], str]
+        If the conjecture is true, returns a tuple with n and the hessenberg function.
+        If the conjecture is true for all hessenberg functions, returns a string.
+    """
     for h in h_func(n):
         if sum(sum(perm_gasharov_df(n, h).values)) > 0:
             return n, h
