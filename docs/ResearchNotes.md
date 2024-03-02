@@ -153,3 +153,33 @@ Looking at `[3, 4, 5, 5, 5]` and in degree `3` and shape `[3, 2]` these permutat
 [4, 1, 2, 5, 3] 
 [4, 1, 5, 2, 3] 
 ```
+In degree `4` and shape `[3, 2]` these look like a candiate orbit
+```
+[2, 1, 5, 4, 3]
+[3, 1, 5, 4, 2]
+[3, 2, 1, 5, 4]
+[3, 2, 5, 4, 1]
+[4, 1, 5, 3, 2]
+[4, 2, 1, 5, 3]
+[4, 2, 5, 3, 1]
+[4, 3, 1, 5, 2]
+[5, 2, 1, 4, 3]
+[5, 3, 1, 4, 2]
+```
+Also, having the full inversion set is not sufficient to be trivial.  See degree 2 -- there are 9 permutations, but only 7 trivial reps.
+
+In degree 5:  these are 2 candidate orbits for [4, 1]
+
+```
+[1, 5, 4, 3, 2]
+[2, 5, 4, 3, 1]
+[3, 5, 4, 2, 1]
+[5, 3, 2, 1, 4]
+[5, 4, 2, 1, 3]
+
+[3, 5, 2, 4, 1]
+[4, 5, 2, 3, 1]
+[4, 5, 3, 1, 2]
+[5, 2, 4, 1, 3]
+[5, 3, 4, 1, 2]
+```
