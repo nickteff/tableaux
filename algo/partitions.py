@@ -584,11 +584,16 @@ def conjecture_checker(n: int, h_func: callable) -> Union[Tuple[int, List[int]],
     return f"For {n}, the conjecture is true for all {h_func.__name__}."
 
 
-def h_poly(h):
-    df = perm_gasharov_df(h)
+def h_poly(h, schur=False):
+    if schur:
+        df = gasharov_df(h)
+        rep = "s"
+    else:
+        df = perm_gasharov_df(h)
+        rep = "h"
     # this is a little gross, but due to the way symbols works, we need to
     variables = symbols(
-        [f"h_[{t}]" for t in [";".join(c[1:-1].split(", ")) for c in df.columns]]
+        [f"{rep}_[{t}]" for t in [";".join(c[1:-1].split(", ")) for c in df.columns]]
     )
     q = symbols("q")
     poly = 0
