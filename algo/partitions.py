@@ -317,7 +317,7 @@ def h_banded_function(i: int, n: int) -> List[int]:
     list
         The banded function as a list of integers.
     """
-    return [min(j + i, n) for j in range(n + 1)]
+    return [min(j + i, n) for j in range(n)]
 
 
 def h_bands(n: int) -> List[List[int]]:
