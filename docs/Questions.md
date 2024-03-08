@@ -43,6 +43,12 @@
 > 
 >I have looked at the uniqueness in some ways it is contingent on how precisely we start.  We can make a statment about it when the largest number N is required to begin or end the sequence.  If there is a statement that there is at most 1 valley -- and when no valleys then it is either the decreasing or increasing sequence.  The latter being the unique one with no descents -- to say this claim we need to know about climbs, because otherwise we can end with N more readily.  If no climbs, then there is a recursive/inductive argument at our disposal. 
 
+>[!NOTE] #question
+> 
+> Does hanving the full inversion set make a perm trivial?
+>
+> No!  Look at `h=34555` and degree 2, there are 9 perms with full inversion set, but only 7 copies of the trivial
+
 
 
 

@@ -189,4 +189,12 @@ In degree 5:  these are 2 candidate orbits for [4, 1]
 Looked a little at OEIS and couldn't find anything.
 
 Spending time trying to capture what is going on for the `h(i) = min(i+2, n)` case. Still not hitting it.  For `n=3` I could argue that they are all trivial because with the rule where the largest value starts the perm, then we cannot get anything where there are `2-descents`.  Then the index becomes descent sets...
-Looking if this extends to `n=4` and the `degree = 2,3` examples are not outright wrong. 
+Looking if this extends to `n=4` and the `degree = 2,3` examples are not outright wrong.
+
+## 2024-03-07
+
+Looking at `n=4` we hav3 5 possible elements in the `[3, 1]` orbits.  In degree 3, the orbit appears to be `[1, 4, 3, 2], [2, 4, 3, 1], [3, 2, 1, 4], [4, 1, 3, 2], [4, 2, 1, 3]`
+in degree 2, we have 5 candidates for the orbit `[1, 3, 4, 2], [1, 4, 2, 3], [2, 3, 1, 4], [2, 3, 4, 1], [3, 1, 2, 4]`
+
+Maybe there is a reason to exclude `[2, 4, 3, 1]` and `[1, 4, 2, 3]` respectively?
+

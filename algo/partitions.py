@@ -604,4 +604,4 @@ def h_poly(h, schur=False):
             # Add the term to the polynomial
             poly += int(value) * variables[j] * q**i
 
-    return collect(poly, variables)
+    return collect(collect(poly, variables), q)
